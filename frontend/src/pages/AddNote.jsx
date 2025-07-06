@@ -171,10 +171,8 @@ const AddNote = () => {
         wordCount,
         characterCount
       };
-
-      console.log('Saving advanced note:', noteData);
       
-      // Simulate API call
+      // Save note - this would connect to your backend
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       navigate('/');

@@ -5,8 +5,9 @@ import { useSearch } from '../context/SearchContext';
 
 const Dashboard = () => {
   const { searchQuery } = useSearch();
-  // TODO: Replace with actual API call to fetch user's notes
-  const allNotes = []; // Empty array - no mock data
+  
+  // Fetch user's notes - this would connect to your backend
+  const allNotes = []; // Empty array - ready for real data integration
   
   // Filter out archived notes (notes with isArchived: true property)
   const activeNotes = allNotes.filter(note => !note.isArchived);

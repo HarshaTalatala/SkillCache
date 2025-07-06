@@ -34,7 +34,7 @@ body {
 }
 
 .keep-logo-text {
-  @apply text-lg font-bold transition-opacity duration-200;
+  @apply text-xl font-bold transition-opacity duration-200;
 }
 
 .sidebar.collapsed .keep-logo-text {
@@ -73,7 +73,7 @@ body {
 
 /* Content top bar */
 .content-top-bar {
-  @apply flex items-center gap-4 px-6 py-3 sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/30;
+  @apply flex items-center gap-4 px-6 pb-3 sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/30;
 }
 
 /* Search bar */

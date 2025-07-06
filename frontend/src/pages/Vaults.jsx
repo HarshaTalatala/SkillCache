@@ -1,18 +1,68 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Unlock, Plus, Trash2, Edit, MoreVertical, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { 
+  Lock, 
+  Unlock, 
+  Plus, 
+  Trash2, 
+  Edit, 
+  MoreVertical, 
+  AlertCircle, 
+  Users, 
+  Mail, 
+  UserPlus, 
+  Crown, 
+  Eye, 
+  EditIcon,
+  CheckCircle,
+  XCircle,
+  Shield,
+  UserMinus,
+  Clock,
+  Star,
+  Sparkles
+} from 'lucide-react';
 import { useVault } from '../context/VaultContext';
+import { useAuth } from '../context/AuthContext';
 
 const Vaults = () => {
-  const { vaults, loading, error, fetchVaults, createVault, deleteVault } = useVault();
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const { 
+    vaults, 
+    loading, 
+    error, 
+    invitations,
+    fetchVaults, 
+    createVault, 
+    deleteVault,
+    inviteUserToVault,
+    acceptInvitation,
+    rejectInvitation,
+    removeUserFromVault,
+    updateUserRole,
+    getVaultMembers,
+    fetchInvitations,
+    hasPermission
+  } = useVault();
+  
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
+  const [selectedVault, setSelectedVault] = useState(null);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState('view');
   const [newVaultData, setNewVaultData] = useState({
     name: '',
     description: '',
-    isPrivate: true
+    isPrivate: true,
+    ownerId: currentUser?.uid,
+    ownerEmail: currentUser?.email
   });
   
   useEffect(() => {
     fetchVaults();
+    fetchInvitations();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
@@ -31,7 +81,9 @@ const Vaults = () => {
       setNewVaultData({
         name: '',
         description: '',
-        isPrivate: true
+        isPrivate: true,
+        ownerId: currentUser?.uid,
+        ownerEmail: currentUser?.email
       });
       setIsCreateModalOpen(false);
     } catch (error) {
@@ -48,6 +100,95 @@ const Vaults = () => {
       }
     }
   };
+
+  const handleInviteUser = async (e) => {
+    e.preventDefault();
+    if (!selectedVault) return;
+    
+    try {
+      await inviteUserToVault(selectedVault.id, inviteEmail, inviteRole);
+      setInviteEmail('');
+      setInviteRole('view');
+      setIsInviteModalOpen(false);
+    } catch (error) {
+      console.error("Error inviting user:", error);
+    }
+  };
+
+  const handleAcceptInvitation = async (invitationId) => {
+    try {
+      await acceptInvitation(invitationId);
+    } catch (error) {
+      console.error("Error accepting invitation:", error);
+    }
+  };
+
+  const handleRejectInvitation = async (invitationId) => {
+    try {
+      await rejectInvitation(invitationId);
+    } catch (error) {
+      console.error("Error rejecting invitation:", error);
+    }
+  };
+
+  const handleRemoveUser = async (vaultId, userId) => {
+    if (window.confirm("Are you sure you want to remove this user from the vault?")) {
+      try {
+        await removeUserFromVault(vaultId, userId);
+      } catch (error) {
+        console.error("Error removing user:", error);
+      }
+    }
+  };
+
+  const handleRoleChange = async (vaultId, userId, newRole) => {
+    try {
+      await updateUserRole(vaultId, userId, newRole);
+    } catch (error) {
+      console.error("Error updating user role:", error);
+    }
+  };
+
+  const openInviteModal = (vault) => {
+    setSelectedVault(vault);
+    setIsInviteModalOpen(true);
+  };
+
+  const openMembersModal = (vault) => {
+    setSelectedVault(vault);
+    setIsMembersModalOpen(true);
+  };
+
+  const handleVaultClick = (vault) => {
+    // Navigate to vault detail page
+    navigate(`/vaults/${vault.id}`);
+  };
+
+  const getRoleIcon = (role) => {
+    switch (role) {
+      case 'owner':
+        return <Crown className="w-4 h-4 text-yellow-500" />;
+      case 'edit':
+        return <EditIcon className="w-4 h-4 text-blue-500" />;
+      case 'view':
+        return <Eye className="w-4 h-4 text-gray-500" />;
+      default:
+        return <Shield className="w-4 h-4 text-gray-400" />;
+    }
+  };
+
+  const getRoleColor = (role) => {
+    switch (role) {
+      case 'owner':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'edit':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'view':
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+      default:
+        return 'bg-gray-100 text-gray-600 border-gray-200';
+    }
+  };
   
   return (
     <div className="max-w-6xl mx-auto px-6 py-8">
@@ -55,13 +196,16 @@ const Vaults = () => {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Knowledge Vaults</h1>
+            <h1 className="text-3xl font-medium text-foreground flex items-center gap-3">
+              <Sparkles className="w-8 h-8 text-primary" />
+              Knowledge Vaults
+            </h1>
             <p className="text-muted-foreground">Organize and protect your specialized knowledge collections</p>
           </div>
           
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="nothing-btn-primary flex items-center gap-2 max-w-max"
+            className="nothing-btn-primary flex items-center gap-2 max-w-max px-3 py-2 text-sm"
           >
             <Plus className="w-4 h-4" />
             New Vault
@@ -86,27 +230,98 @@ const Vaults = () => {
           </div>
         )}
         
+        {/* Pending Invitations */}
+        {invitations && invitations.length > 0 && (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <Mail className="h-5 w-5 text-blue-500" />
+              <div>
+                <h2 className="text-lg font-medium text-foreground">Pending Invitations</h2>
+                <p className="text-sm text-muted-foreground">
+                  {invitations.length} invitation{invitations.length !== 1 ? 's' : ''} waiting for response
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid gap-4">
+              {invitations.map((invitation) => (
+                <div
+                  key={invitation.id}
+                  className="nothing-card p-6 hover:shadow-lg transition-all duration-300"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/30">
+                        <Mail className="w-6 h-6 text-blue-500" />
+                      </div>
+                      
+                      <div className="flex-1">
+                        <h4 className="font-medium text-foreground text-lg mb-1">
+                          {invitation.vaultName}
+                        </h4>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                          <span>by {invitation.invitedBy}</span>
+                          <span>•</span>
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${
+                            invitation.role === 'edit' 
+                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' 
+                              : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+                          }`}>
+                            {getRoleIcon(invitation.role)}
+                            <span className="capitalize">{invitation.role}</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleAcceptInvitation(invitation.id)}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium text-sm"
+                        title="Accept invitation"
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                        Accept
+                      </button>
+                      
+                      <button
+                        onClick={() => handleRejectInvitation(invitation.id)}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium text-sm"
+                        title="Reject invitation"
+                      >
+                        <XCircle className="w-4 h-4" />
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
         {/* Vaults Grid */}
         {!loading && !error && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {vaults.map((vault) => (
               <div
                 key={vault.id}
-                className="nothing-card p-6 hover:shadow-md transition-all"
+                className="nothing-card p-6 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group cursor-pointer"
+                onClick={() => handleVaultClick(vault)}
               >
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-3">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-4">
                     {vault.isPrivate ? (
-                      <div className="w-10 h-10 bg-muted/50 rounded-full flex items-center justify-center">
-                        <Lock className="w-5 h-5 text-primary" />
+                      <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center border-2 border-primary/30 group-hover:scale-110 transition-transform duration-300">
+                        <Lock className="w-6 h-6 text-primary" />
                       </div>
                     ) : (
-                      <div className="w-10 h-10 bg-muted/50 rounded-full flex items-center justify-center">
-                        <Unlock className="w-5 h-5 text-green-500" />
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-green-600/30 rounded-2xl flex items-center justify-center border-2 border-green-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <Unlock className="w-6 h-6 text-green-500" />
                       </div>
                     )}
                     <div>
-                      <h3 className="font-semibold text-lg text-foreground">{vault.name}</h3>
+                      <h3 className="font-medium text-lg text-foreground group-hover:text-primary transition-colors duration-300">{vault.name}</h3>
                       <p className="text-sm text-muted-foreground">
                         Created {new Date(vault.createdAt).toLocaleDateString()}
                       </p>
@@ -114,31 +329,72 @@ const Vaults = () => {
                   </div>
                   
                   <div className="relative">
-                    <button className="p-1.5 rounded-full hover:bg-muted transition-colors">
-                      <MoreVertical className="w-4 h-4 text-muted-foreground" />
+                    <button 
+                      className="p-2 rounded-xl hover:bg-muted transition-all duration-300 group-hover:bg-primary/10"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <MoreVertical className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
                     </button>
                   </div>
                 </div>
                 
-                <p className="mt-4 text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                   {vault.description || "No description provided."}
                 </p>
                 
-                <div className="mt-6 pt-4 border-t border-border/30 flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
-                    {vault.isPrivate ? "Private vault" : "Shared vault"}
+                <div className="flex items-center gap-4 text-sm mb-6">
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
+                    <Users className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-muted-foreground">{vault.members?.length || 0} member{vault.members?.length !== 1 ? 's' : ''}</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
+                    {getRoleIcon(vault.members?.find(m => m.userId === currentUser?.uid)?.role || 'view')}
+                    <span className="capitalize text-muted-foreground">
+                      {vault.members?.find(m => m.userId === currentUser?.uid)?.role || 'view'}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="pt-4 border-t border-border/30 flex items-center justify-between">
+                  <div className={`text-sm font-medium px-3 py-1 rounded-lg ${
+                    vault.isPrivate 
+                      ? 'bg-primary/10 text-primary' 
+                      : 'bg-green-500/10 text-green-500'
+                  }`}>
+                    {vault.isPrivate ? "🔒 Private vault" : "🌐 Shared vault"}
                   </div>
                   
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    {hasPermission(vault.id, currentUser?.uid, 'invite') && (
+                      <button
+                        onClick={() => openInviteModal(vault)}
+                        className="p-2 rounded-xl hover:bg-blue-500/10 hover:text-blue-500 transition-all duration-300"
+                        title="Invite users"
+                      >
+                        <UserPlus className="w-4 h-4" />
+                      </button>
+                    )}
+                    
                     <button
-                      onClick={() => handleDeleteVault(vault.id)}
-                      className="p-1.5 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
-                      title="Delete vault"
+                      onClick={() => openMembersModal(vault)}
+                      className="p-2 rounded-xl hover:bg-green-500/10 hover:text-green-500 transition-all duration-300"
+                      title="View members"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Users className="w-4 h-4" />
                     </button>
+                    
+                    {hasPermission(vault.id, currentUser?.uid, 'delete_vault') && (
+                      <button
+                        onClick={() => handleDeleteVault(vault.id)}
+                        className="p-2 rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all duration-300"
+                        title="Delete vault"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                    
                     <button
-                      className="p-1.5 rounded-full hover:bg-muted transition-colors"
+                      className="p-2 rounded-xl hover:bg-muted transition-all duration-300"
                       title="Edit vault"
                     >
                       <Edit className="w-4 h-4" />
@@ -150,16 +406,21 @@ const Vaults = () => {
             
             {vaults.length === 0 && (
               <div className="col-span-full text-center py-12">
-                <div className="text-6xl mb-4">🔒</div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-2xl flex items-center justify-center mx-auto border-2 border-primary/30 shadow-lg">
+                    <Lock className="w-8 h-8 text-primary" />
+                  </div>
+                  <div className="absolute inset-0 bg-primary/10 rounded-2xl blur-xl -z-10 mx-auto w-16 h-16"></div>
+                </div>
+                <h3 className="text-lg font-medium text-foreground mb-2 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text">
                   No vaults yet
                 </h3>
-                <p className="text-muted-foreground mb-6">
-                  Create your first knowledge vault to organize specialized content
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed text-sm">
+                  Create your first knowledge vault to organize specialized content and collaborate with your team
                 </p>
                 <button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="nothing-btn-primary flex items-center gap-2 mx-auto"
+                  className="nothing-btn-primary flex items-center gap-2 mx-auto text-sm px-4 py-2"
                 >
                   <Plus className="w-4 h-4" />
                   Create First Vault
@@ -175,7 +436,7 @@ const Vaults = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-md">
             <div className="p-6">
-              <h3 className="text-xl font-bold text-foreground mb-4">Create New Vault</h3>
+              <h3 className="text-xl font-medium text-foreground mb-4">Create New Vault</h3>
               
               <form onSubmit={handleCreateVault} className="space-y-4">
                 <div>
@@ -238,6 +499,144 @@ const Vaults = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Invite User Modal */}
+      {isInviteModalOpen && selectedVault && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-md">
+            <div className="p-6">
+              <h3 className="text-xl font-medium text-foreground mb-4">
+                Invite User to "{selectedVault.name}"
+              </h3>
+              
+              <form onSubmit={handleInviteUser} className="space-y-4">
+                <div>
+                  <label htmlFor="inviteEmail" className="block text-sm font-medium text-foreground mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    id="inviteEmail"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    className="nothing-input"
+                    placeholder="Enter email address"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="inviteRole" className="block text-sm font-medium text-foreground mb-1">
+                    Role
+                  </label>
+                  <select
+                    id="inviteRole"
+                    value={inviteRole}
+                    onChange={(e) => setInviteRole(e.target.value)}
+                    className="nothing-input"
+                  >
+                    <option value="view">View Only</option>
+                    <option value="edit">Edit Access</option>
+                  </select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    View: Can see vault contents | Edit: Can add and modify content
+                  </p>
+                </div>
+                
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/30">
+                  <button
+                    type="button"
+                    onClick={() => setIsInviteModalOpen(false)}
+                    className="nothing-btn-ghost"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="nothing-btn-primary"
+                  >
+                    Send Invitation
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Members Modal */}
+      {isMembersModalOpen && selectedVault && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-2xl">
+            <div className="p-6">
+              <h3 className="text-xl font-medium text-foreground mb-4">
+                Members of "{selectedVault.name}"
+              </h3>
+              
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {getVaultMembers(selectedVault.id).map((member) => (
+                  <div
+                    key={member.userId}
+                    className="flex items-center justify-between p-3 border border-border/50 rounded-lg"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                        <Users className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">{member.email}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Joined {new Date(member.joinedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <div className={`px-2 py-1 rounded-md border text-xs font-medium ${getRoleColor(member.role)}`}>
+                        <div className="flex items-center gap-1">
+                          {getRoleIcon(member.role)}
+                          <span className="capitalize">{member.role}</span>
+                        </div>
+                      </div>
+                      
+                      {hasPermission(selectedVault.id, currentUser?.uid, 'remove_member') && 
+                       member.role !== 'owner' && member.userId !== currentUser?.uid && (
+                        <>
+                          <select
+                            value={member.role}
+                            onChange={(e) => handleRoleChange(selectedVault.id, member.userId, e.target.value)}
+                            className="text-xs border border-border/50 rounded px-2 py-1 bg-background"
+                          >
+                            <option value="view">View</option>
+                            <option value="edit">Edit</option>
+                          </select>
+                          
+                          <button
+                            onClick={() => handleRemoveUser(selectedVault.id, member.userId)}
+                            className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                            title="Remove user"
+                          >
+                            <UserMinus className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/30 mt-4">
+                <button
+                  onClick={() => setIsMembersModalOpen(false)}
+                  className="nothing-btn-primary"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

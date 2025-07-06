@@ -414,7 +414,7 @@ body {
   
   .keep-logo-text {
     margin-left: 12px;
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 800;
     color: hsl(var(--foreground)) !important;
     opacity: 1;

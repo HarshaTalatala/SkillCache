@@ -6,6 +6,8 @@ import './App.css';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { SearchProvider } from './context/SearchContext';
+import { PreferencesProvider } from './context/PreferencesContext';
+import { VaultProvider } from './context/VaultContext';
 
 // Layout Component
 import Layout from './components/Layout';
@@ -20,12 +22,16 @@ import AddNote from './pages/AddNote';
 import Categories from './pages/Categories';
 import Archive from './pages/Archive';
 import Vaults from './pages/Vaults';
+import VaultDetail from './pages/VaultDetail';
+import Settings from './pages/Settings';
 
 function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <SearchProvider>
+        <PreferencesProvider>
+          <SearchProvider>
+            <VaultProvider>
           <Routes>
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
@@ -93,11 +99,33 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/vaults/:vaultId"
+              element={
+                <ProtectedRoute requireEmailVerification={true}>
+                  <Layout>
+                    <VaultDetail />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Settings />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
             
             {/* Redirect unknown routes to dashboard */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </SearchProvider>
+            </VaultProvider>
+          </SearchProvider>
+        </PreferencesProvider>
       </ThemeProvider>
     </AuthProvider>
   );

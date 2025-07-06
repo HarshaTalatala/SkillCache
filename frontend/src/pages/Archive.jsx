@@ -6,39 +6,8 @@ const Archive = () => {
   const { searchQuery, setSearchQuery } = useSearch();
   const [selectedNotes, setSelectedNotes] = useState([]);
   
-  // TODO: Replace with actual API call to fetch archived notes
-  const archivedNotes = [
-    {
-      id: 1,
-      title: 'Old Project Notes',
-      summary: 'Notes from the previous quarter project that was completed successfully.',
-      type: 'planning',
-      tags: ['project', 'completed', 'archive'],
-      createdAt: '2024-10-15',
-      archivedAt: '2024-12-01',
-      category: 'Work'
-    },
-    {
-      id: 2,
-      title: 'Legacy Code Documentation',
-      summary: 'Documentation for the old system before migration to the new architecture.',
-      type: 'reference',
-      tags: ['documentation', 'legacy', 'code'],
-      createdAt: '2024-09-20',
-      archivedAt: '2024-11-28',
-      category: 'Programming'
-    },
-    {
-      id: 3,
-      title: 'Meeting Notes - Q3 Review',
-      summary: 'Important discussion points and decisions from the quarterly review meeting.',
-      type: 'article',
-      tags: ['meeting', 'quarterly', 'review'],
-      createdAt: '2024-09-30',
-      archivedAt: '2024-12-05',
-      category: 'Work'
-    }
-  ];
+  // Fetch archived notes - ready for backend integration
+  const archivedNotes = []; // Empty array - will be populated from backend
 
   const typeIcons = {
     article: BookOpen,
@@ -63,14 +32,12 @@ const Archive = () => {
   };
 
   const handleRestore = async () => {
-    // TODO: Implement restore functionality
-    console.log('Restoring notes:', selectedNotes);
+    // Implement restore functionality when backend is connected
     setSelectedNotes([]);
   };
 
   const handlePermanentDelete = async () => {
-    // TODO: Implement permanent delete functionality
-    console.log('Permanently deleting notes:', selectedNotes);
+    // Implement permanent delete functionality when backend is connected
     setSelectedNotes([]);
   };
 
@@ -227,7 +194,9 @@ const Archive = () => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">📦</div>
+            <div className="w-16 h-16 bg-gradient-to-br from-muted/50 to-muted/70 rounded-2xl flex items-center justify-center mx-auto mb-4 border-2 border-muted/30">
+              <ArchiveIcon className="w-8 h-8 text-muted-foreground" />
+            </div>
             <h3 className="text-lg font-semibold text-foreground mb-2">
               {searchQuery ? 'No archived notes found' : 'No archived notes'}
             </h3>
