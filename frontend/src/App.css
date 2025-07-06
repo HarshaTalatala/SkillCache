@@ -1,0 +1,177 @@
+/* Base styles for SkillCache app */
+body {
+  font-family: 'Inter', sans-serif;
+  @apply bg-background text-foreground;
+}
+
+/* Sidebar styles */
+.sidebar {
+  @apply fixed top-0 bottom-0 left-0 z-40 w-64 bg-card border-r border-border/30 transition-all duration-300 transform;
+  @apply flex flex-col p-4 overflow-y-auto;
+}
+
+.sidebar.open {
+  @apply transform-none;
+}
+
+.sidebar.collapsed {
+  @apply w-20;
+}
+
+@media (max-width: 1023px) {
+  .sidebar {
+    @apply -translate-x-full;
+  }
+}
+
+/* Logo area */
+.keep-logo-area {
+  @apply flex items-center gap-2 py-3 px-3 rounded-lg hover:bg-muted/70 transition-colors cursor-pointer;
+}
+
+.logo-icon {
+  @apply flex-shrink-0 text-primary;
+}
+
+.keep-logo-text {
+  @apply text-lg font-bold transition-opacity duration-200;
+}
+
+.sidebar.collapsed .keep-logo-text {
+  @apply opacity-0 hidden;
+}
+
+/* Navigation items */
+.keep-nav-item {
+  @apply flex items-center gap-3 px-3 py-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-colors mb-1;
+}
+
+.keep-nav-item.active {
+  @apply bg-muted text-foreground;
+}
+
+.keep-nav-icon {
+  @apply w-5 h-5 flex-shrink-0;
+}
+
+.keep-nav-text {
+  @apply transition-opacity duration-200;
+}
+
+.sidebar.collapsed .keep-nav-text {
+  @apply opacity-0 hidden;
+}
+
+/* Main content */
+.main-content {
+  @apply ml-0 lg:ml-64 transition-all duration-300;
+}
+
+.main-content.sidebar-collapsed {
+  @apply lg:ml-20;
+}
+
+/* Content top bar */
+.content-top-bar {
+  @apply flex items-center gap-4 px-6 py-3 sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/30;
+}
+
+/* Search bar */
+.search-bar {
+  @apply flex items-center gap-2 px-4 py-2 bg-card border border-border/30 rounded-lg max-w-md w-full;
+}
+
+/* User controls */
+.user-controls {
+  @apply flex items-center gap-2;
+}
+
+.user-control-btn {
+  @apply w-9 h-9 flex items-center justify-center transition-all duration-200;
+}
+
+/* Auth pages */
+.auth-container {
+  @apply min-h-screen flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden;
+}
+
+.auth-card {
+  @apply bg-card border border-border/30 rounded-xl shadow-lg w-full max-w-md p-8;
+}
+
+.auth-header {
+  @apply mb-8 text-center;
+}
+
+.auth-logo {
+  @apply mx-auto w-12 h-12 bg-primary/20 text-primary rounded-xl flex items-center justify-center mb-6;
+}
+
+.auth-title {
+  @apply text-2xl font-bold text-foreground mb-2;
+}
+
+.auth-subtitle {
+  @apply text-muted-foreground;
+}
+
+.auth-link {
+  @apply text-primary hover:text-primary/80 transition-colors font-medium;
+}
+
+.auth-form {
+  @apply space-y-6;
+}
+
+.auth-error {
+  @apply bg-destructive/10 border border-destructive/30 text-destructive p-3 rounded-md flex items-center gap-2 mb-6;
+}
+
+.auth-success {
+  @apply text-center p-8 space-y-4;
+}
+
+/* Nothing UI inspired components */
+.nothing-btn-primary {
+  @apply bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 px-5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.nothing-btn-secondary {
+  @apply bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2.5 px-5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.nothing-btn-ghost {
+  @apply bg-transparent hover:bg-muted text-foreground border border-border/50 py-2.5 px-5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.nothing-input {
+  @apply bg-card border border-border/50 focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none rounded-lg py-2.5 px-4 text-foreground placeholder-muted-foreground w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.nothing-card {
+  @apply bg-card border border-border/50 rounded-lg;
+}
+
+/* Custom color accents */
+.red-accent {
+  @apply text-primary;
+}
+
+/* Empty state */
+.empty-state-full {
+  @apply min-h-[70vh] flex items-center justify-center p-6;
+}
+
+/* Tags */
+.tag-pill {
+  @apply px-2 py-1 text-xs rounded-full bg-muted text-muted-foreground;
+}
+
+/* Masonry grid for notes */
+.masonry-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+}
+
+.note-card {
+  @apply bg-card border border-border/30 hover:border-border/80 p-4 rounded-lg transition-all cursor-pointer;
+}

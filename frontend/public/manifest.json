@@ -1,0 +1,15 @@
+{
+  "short_name": "SkillCache",
+  "name": "SkillCache Knowledge Vault",
+  "icons": [
+    {
+      "src": "assets/favicon.ico",
+      "type": "image/x-icon",
+      "sizes": "16x16 32x32 48x48 64x64"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0f172a",
+  "background_color": "#ffffff"
+}

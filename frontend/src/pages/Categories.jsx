@@ -1,0 +1,355 @@
+import React, { useState } from 'react';
+import { 
+  Hash,
+  Terminal,
+  Palette,
+  BookOpen,
+  Lightbulb,
+  Briefcase,
+  User,
+  ArrowLeft,
+  Calendar,
+  Clock
+} from 'lucide-react';
+import { useSearch } from '../context/SearchContext';
+
+const Categories = () => {
+  const { searchQuery } = useSearch();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  // Default categories with icons and colors
+  const defaultCategories = [
+    {
+      id: 'programming',
+      name: 'Programming',
+      icon: Terminal,
+      color: 'blue',
+      description: 'Code snippets, tutorials, and development notes',
+      noteCount: 24,
+      notes: [
+        {
+          id: 1,
+          title: 'React Hooks Best Practices',
+          summary: 'Essential patterns and tips for using React hooks effectively',
+          createdAt: '2024-12-15',
+          priority: 'high'
+        },
+        {
+          id: 2,
+          title: 'JavaScript ES6 Features',
+          summary: 'Modern JavaScript features and their practical applications',
+          createdAt: '2024-12-10',
+          priority: 'medium'
+        }
+      ]
+    },
+    {
+      id: 'design',
+      name: 'Design',
+      icon: Palette,
+      color: 'purple',
+      description: 'UI/UX designs, inspiration, and creative resources',
+      noteCount: 18,
+      notes: [
+        {
+          id: 3,
+          title: 'Design System Guidelines',
+          summary: 'Comprehensive guide for building consistent design systems',
+          createdAt: '2024-12-12',
+          priority: 'high'
+        }
+      ]
+    },
+    {
+      id: 'learning',
+      name: 'Learning',
+      icon: BookOpen,
+      color: 'green',
+      description: 'Educational content, courses, and study materials',
+      noteCount: 32,
+      notes: [
+        {
+          id: 4,
+          title: 'Machine Learning Basics',
+          summary: 'Introduction to ML concepts and algorithms',
+          createdAt: '2024-12-08',
+          priority: 'medium'
+        },
+        {
+          id: 5,
+          title: 'Data Structures Overview',
+          summary: 'Common data structures and their use cases',
+          createdAt: '2024-12-05',
+          priority: 'low'
+        }
+      ]
+    },
+    {
+      id: 'ideas',
+      name: 'Ideas',
+      icon: Lightbulb,
+      color: 'yellow',
+      description: 'Creative ideas, brainstorming, and inspiration',
+      noteCount: 15,
+      notes: [
+        {
+          id: 6,
+          title: 'App Concept: Personal Finance Tracker',
+          summary: 'Mobile app idea for tracking expenses and budgeting',
+          createdAt: '2024-12-14',
+          priority: 'medium'
+        }
+      ]
+    },
+    {
+      id: 'work',
+      name: 'Work',
+      icon: Briefcase,
+      color: 'red',
+      description: 'Professional projects, meetings, and work-related notes',
+      noteCount: 28,
+      notes: [
+        {
+          id: 7,
+          title: 'Q4 Project Planning',
+          summary: 'Strategic planning for upcoming quarter deliverables',
+          createdAt: '2024-12-13',
+          priority: 'high'
+        },
+        {
+          id: 8,
+          title: 'Team Meeting Notes',
+          summary: 'Weekly standup discussions and action items',
+          createdAt: '2024-12-11',
+          priority: 'medium'
+        }
+      ]
+    },
+    {
+      id: 'personal',
+      name: 'Personal',
+      icon: User,
+      color: 'indigo',
+      description: 'Personal thoughts, diary entries, and life notes',
+      noteCount: 12,
+      notes: [
+        {
+          id: 9,
+          title: 'Travel Planning: Japan Trip',
+          summary: 'Itinerary and research for upcoming vacation',
+          createdAt: '2024-12-09',
+          priority: 'low'
+        }
+      ]
+    }
+  ];
+
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const handleBackToCategories = () => {
+    setSelectedCategory(null);
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority) {
+      case 'high': return 'text-red-500';
+      case 'medium': return 'text-yellow-500';
+      case 'low': return 'text-green-500';
+      default: return 'text-muted-foreground';
+    }
+  };
+
+  const getColorClasses = (color) => {
+    const colors = {
+      blue: 'bg-card border-border/50 hover:border-blue-500/30 hover:bg-blue-500/5',
+      purple: 'bg-card border-border/50 hover:border-purple-500/30 hover:bg-purple-500/5',
+      green: 'bg-card border-border/50 hover:border-green-500/30 hover:bg-green-500/5',
+      yellow: 'bg-card border-border/50 hover:border-yellow-500/30 hover:bg-yellow-500/5',
+      red: 'bg-card border-border/50 hover:border-red-500/30 hover:bg-red-500/5',
+      indigo: 'bg-card border-border/50 hover:border-indigo-500/30 hover:bg-indigo-500/5'
+    };
+    return colors[color] || colors.blue;
+  };
+
+  const getIconColorClass = (color) => {
+    const colors = {
+      blue: 'text-blue-400',
+      purple: 'text-purple-400',
+      green: 'text-green-400',
+      yellow: 'text-yellow-400',
+      red: 'text-red-400',
+      indigo: 'text-indigo-400'
+    };
+    return colors[color] || colors.blue;
+  };
+
+  // If a category is selected, show its notes
+  if (selectedCategory) {
+    const CategoryIcon = selectedCategory.icon;
+    
+    // Filter notes in selected category based on search query
+    const filteredNotes = selectedCategory.notes.filter(note =>
+      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      note.summary.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="space-y-4">
+          {/* Header with Back Button */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleBackToCategories}
+              className="p-2 rounded-lg border border-border/50 hover:bg-muted hover:border-border/80 transition-colors"
+              title="Back to categories"
+            >
+              <ArrowLeft className={`w-6 h-6 ${getIconColorClass(selectedCategory.color)}`} />
+            </button>
+            
+            <div className="flex items-center gap-3">
+              <CategoryIcon className={`w-8 h-8 ${getIconColorClass(selectedCategory.color)}`} />
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">{selectedCategory.name}</h1>
+                <p className="text-muted-foreground">{selectedCategory.description}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Notes List */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-foreground">
+                Notes ({filteredNotes.length})
+              </h2>
+            </div>
+
+            {filteredNotes.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {filteredNotes.map((note) => (
+                  <div
+                    key={note.id}
+                    className="p-3 bg-card border border-border/50 rounded-lg hover:border-border/80 transition-all cursor-pointer"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-start justify-between">
+                        <h3 className="font-semibold text-foreground line-clamp-2 text-sm">
+                          {note.title}
+                        </h3>
+                        <span className={`text-xs font-medium ${getPriorityColor(note.priority)}`}>
+                          {note.priority}
+                        </span>
+                      </div>
+                      
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        {note.summary}
+                      </p>
+                      
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Calendar className="w-3 h-3" />
+                        <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="text-4xl mb-4">📝</div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {searchQuery ? 'No notes found' : 'No notes yet'}
+                </h3>
+                <p className="text-muted-foreground">
+                  {searchQuery 
+                    ? 'Try adjusting your search terms to find notes in this category.'
+                    : 'Create your first note in this category to get started'
+                  }
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Filter categories based on search query
+  const filteredCategories = defaultCategories.filter(category =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    category.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    category.notes.some(note => 
+      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      note.summary.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
+  return (
+    <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <Hash className="w-10 h-10 text-primary" />
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Categories</h1>
+              <p className="text-muted-foreground">Organize your notes by categories</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Categories Grid */}
+        {filteredCategories.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCategories.map((category) => {
+              const Icon = category.icon;
+              
+              return (
+                <div
+                  key={category.id}
+                  onClick={() => handleCategorySelect(category)}
+                  className={`p-6 rounded-lg border transition-all cursor-pointer ${getColorClasses(category.color)}`}
+                >
+                  {/* Category Icon */}
+                  <div className="mb-4">
+                    <Icon className={`w-8 h-8 ${getIconColorClass(category.color)}`} />
+                  </div>
+
+                  {/* Category Info */}
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-foreground">
+                      {category.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {category.description}
+                    </p>
+                    <div className="flex items-center justify-between pt-2">
+                      <span className="text-xs text-muted-foreground">
+                        {category.noteCount} notes
+                      </span>
+                      <span className="text-xs font-medium text-muted-foreground">
+                        Click to view notes
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-lg font-semibold text-foreground mb-2">
+              No categories found
+            </h3>
+            <p className="text-muted-foreground">
+              Try adjusting your search terms to find categories or notes.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Categories;
