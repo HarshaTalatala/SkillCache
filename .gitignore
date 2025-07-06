@@ -41,3 +41,4 @@ Thumbs.db
 
 # Firebase config files
 **/firebaseConfig.js
+frontend/src/firebaseConfig.js

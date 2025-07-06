@@ -4,20 +4,13 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 // Firebase configuration from environment variables
-// Debug env variables
-console.log('Firebase ENV Variables Check:');
-console.log('VITE_FIREBASE_API_KEY:', import.meta.env.VITE_FIREBASE_API_KEY);
-console.log('VITE_FIREBASE_AUTH_DOMAIN:', import.meta.env.VITE_FIREBASE_AUTH_DOMAIN);
-console.log('VITE_FIREBASE_PROJECT_ID:', import.meta.env.VITE_FIREBASE_PROJECT_ID);
-
-// Using direct values for now to troubleshoot
 export const firebaseConfig = {
-  apiKey: "AIzaSyBWxC79gRZ-x7CBlKNW2Dv6EzLHmaedzrU",
-  authDomain: "skillcache-app.firebaseapp.com",
-  projectId: "skillcache-app",
-  storageBucket: "skillcache-app.appspot.com",
-  messagingSenderId: "387888810669",
-  appId: "1:387888810669:web:28f9698021bb825117d424"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
