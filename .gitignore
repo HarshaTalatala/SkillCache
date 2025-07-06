@@ -38,3 +38,6 @@ frontend/pnpm-debug.log*
 # OS files
 .DS_Store
 Thumbs.db
+
+# Firebase config files
+**/firebaseConfig.js
