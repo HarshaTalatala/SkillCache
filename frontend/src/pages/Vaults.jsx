@@ -60,6 +60,21 @@ const Vaults = () => {
     ownerEmail: currentUser?.email
   });
   
+  // TEST CONTENT: Add a test vault for My Vaults page
+  const testVaults = [
+    {
+      id: 'vault1',
+      name: 'Test Vault',
+      description: 'This is a test vault for My Vaults page.',
+      isPrivate: true,
+      createdAt: new Date().toISOString(),
+      members: [
+        { userId: currentUser?.uid, role: 'owner' }
+      ]
+    }
+  ];
+  const displayVaults = (vaults && vaults.length > 0) ? vaults : testVaults;
+  
   useEffect(() => {
     fetchVaults();
     fetchInvitations();
@@ -191,23 +206,23 @@ const Vaults = () => {
   };
   
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <div className="space-y-8">
+    <div className="max-w-6xl mx-auto mobile-content mobile-section">
+      <div className="space-y-6 lg:space-y-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-medium text-foreground flex items-center gap-3">
-              <Sparkles className="w-8 h-8 text-primary" />
+            <h1 className="text-2xl sm:text-3xl font-medium text-foreground flex items-center gap-2 sm:gap-3">
+              <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
               Knowledge Vaults
             </h1>
-            <p className="text-muted-foreground">Organize and protect your specialized knowledge collections</p>
+            <p className="text-muted-foreground text-sm sm:text-base">Organize and protect your specialized knowledge collections</p>
           </div>
           
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="nothing-btn-primary flex items-center gap-2 max-w-max px-3 py-2 text-sm"
+            className="nothing-btn-primary flex items-center gap-2 w-full sm:w-auto justify-center mobile-btn px-3 py-1.5 text-xs"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3 h-3" />
             New Vault
           </button>
         </div>
@@ -302,22 +317,22 @@ const Vaults = () => {
         
         {/* Vaults Grid */}
         {!loading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {vaults.map((vault) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+            {displayVaults.map((vault) => (
               <div
                 key={vault.id}
-                className="nothing-card p-6 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group cursor-pointer"
+                className="nothing-card p-4 sm:p-6 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group cursor-pointer"
                 onClick={() => handleVaultClick(vault)}
               >
                 <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     {vault.isPrivate ? (
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center border-2 border-primary/30 group-hover:scale-110 transition-transform duration-300">
-                        <Lock className="w-6 h-6 text-primary" />
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center border-2 border-primary/30 group-hover:scale-110 transition-transform duration-300">
+                        <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                       </div>
                     ) : (
-                      <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-green-600/30 rounded-2xl flex items-center justify-center border-2 border-green-500/30 group-hover:scale-110 transition-transform duration-300">
-                        <Unlock className="w-6 h-6 text-green-500" />
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500/20 to-green-600/30 rounded-2xl flex items-center justify-center border-2 border-green-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <Unlock className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
                       </div>
                     )}
                     <div>
@@ -404,7 +419,7 @@ const Vaults = () => {
               </div>
             ))}
             
-            {vaults.length === 0 && (
+            {displayVaults.length === 0 && (
               <div className="col-span-full text-center py-12">
                 <div className="relative mb-6">
                   <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-2xl flex items-center justify-center mx-auto border-2 border-primary/30 shadow-lg">

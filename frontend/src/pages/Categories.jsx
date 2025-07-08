@@ -9,16 +9,18 @@ import {
   User,
   ArrowLeft,
   Calendar,
-  Clock
+  Clock,
+  Eye,
+  Trash2
 } from 'lucide-react';
 import { useSearch } from '../context/SearchContext';
 
 const Categories = () => {
   const { searchQuery } = useSearch();
   const [selectedCategory, setSelectedCategory] = useState(null);
-
-  // Default categories with icons and colors
-  const defaultCategories = [
+  const [noteToPreview, setNoteToPreview] = useState(null);
+  const [noteToDelete, setNoteToDelete] = useState(null);
+  const [categories, setCategories] = useState([
     {
       id: 'programming',
       name: 'Programming',
@@ -142,7 +144,7 @@ const Categories = () => {
         }
       ]
     }
-  ];
+  ]);
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
@@ -150,6 +152,26 @@ const Categories = () => {
 
   const handleBackToCategories = () => {
     setSelectedCategory(null);
+  };
+
+  const handlePreviewNote = (note) => {
+    setNoteToPreview(note);
+  };
+
+  const handleDeleteNote = () => {
+    // Remove the note from the selected category
+    setCategories(prevCategories => 
+      prevCategories.map(category => 
+        category.id === selectedCategory.id 
+          ? {
+              ...category,
+              notes: category.notes.filter(n => n.id !== noteToDelete.id),
+              noteCount: category.notes.filter(n => n.id !== noteToDelete.id).length
+            }
+          : category
+      )
+    );
+    setNoteToDelete(null);
   };
 
   const getPriorityColor = (priority) => {
@@ -226,28 +248,44 @@ const Categories = () => {
             </div>
 
             {filteredNotes.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 {filteredNotes.map((note) => (
                   <div
                     key={note.id}
-                    className="p-3 bg-card border border-border/50 rounded-lg hover:border-border/80 transition-all cursor-pointer"
+                    className="p-6 bg-card border border-border/50 rounded-lg hover:border-border/80 transition-all"
                   >
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                       <div className="flex items-start justify-between">
-                        <h3 className="font-semibold text-foreground line-clamp-2 text-sm">
+                        <h3 className="font-semibold text-foreground line-clamp-2 text-base">
                           {note.title}
                         </h3>
-                        <span className={`text-xs font-medium ${getPriorityColor(note.priority)}`}>
-                          {note.priority}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <button 
+                            className="p-2 hover:bg-muted rounded" 
+                            onClick={() => handlePreviewNote(note)} 
+                            title="Preview Note"
+                          >
+                            <Eye className="h-4 w-4 text-muted-foreground" />
+                          </button>
+                          <button 
+                            className="p-2 hover:bg-muted rounded" 
+                            onClick={() => setNoteToDelete(note)} 
+                            title="Delete Note"
+                          >
+                            <Trash2 className="h-4 w-4 text-muted-foreground" />
+                          </button>
+                          <span className={`text-sm font-medium ${getPriorityColor(note.priority)} ml-1`}>
+                            {note.priority}
+                          </span>
+                        </div>
                       </div>
                       
-                      <p className="text-xs text-muted-foreground line-clamp-2">
+                      <p className="text-sm text-muted-foreground line-clamp-3">
                         {note.summary}
                       </p>
                       
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Calendar className="w-4 h-4" />
                         <span>{new Date(note.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
@@ -270,12 +308,72 @@ const Categories = () => {
             )}
           </div>
         </div>
+
+        {/* Preview Note Modal */}
+        {noteToPreview && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-medium text-foreground">Preview Note</h3>
+                  <button 
+                    onClick={() => setNoteToPreview(null)} 
+                    className="p-1 hover:bg-muted rounded"
+                  >
+                    <span className="sr-only">Close</span>
+                    <span className="text-2xl">&times;</span>
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-semibold text-foreground text-lg mb-2">{noteToPreview.title}</h4>
+                    <p className="text-muted-foreground">{noteToPreview.summary}</p>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="w-4 h-4" />
+                    <span>Created: {new Date(noteToPreview.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-muted-foreground">Priority:</span>
+                    <span className={`text-sm font-medium ${getPriorityColor(noteToPreview.priority)}`}>
+                      {noteToPreview.priority}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-muted-foreground">Category:</span>
+                    <span className="text-sm text-foreground">{selectedCategory.name}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Note Modal */}
+        {noteToDelete && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-sm">
+              <div className="p-6 text-center">
+                <h3 className="text-xl font-medium text-foreground mb-4">Delete Note?</h3>
+                <p className="text-muted-foreground mb-6">Are you sure you want to delete "{noteToDelete.title}"? This action cannot be undone.</p>
+                <div className="flex items-center justify-center gap-3">
+                  <button onClick={() => setNoteToDelete(null)} className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    Cancel
+                  </button>
+                  <button onClick={handleDeleteNote} className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
 
   // Filter categories based on search query
-  const filteredCategories = defaultCategories.filter(category =>
+  const filteredCategories = categories.filter(category =>
     category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     category.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
     category.notes.some(note => 

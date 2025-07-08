@@ -1,3 +1,4 @@
+/* stylelint-disable */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=SF+Pro+Display:wght@300;400;500;600;700&display=swap');
 
 /* Tailwind CSS directives */
@@ -91,11 +92,354 @@
   @apply border-border;
 }
 
+/* Base styles for SkillCache app */
 body {
-  @apply bg-background text-foreground transition-colors duration-300;
   font-family: 'Inter', sans-serif;
-  font-weight: 400;
-  line-height: 1.6;
+  @apply bg-background text-foreground;
+}
+
+/* Sidebar styles */
+.sidebar {
+  @apply fixed top-0 bottom-0 left-0 z-40 w-64 bg-card border-r border-border/30 transition-all duration-300 transform;
+  @apply flex flex-col p-4 overflow-y-auto;
+}
+
+.sidebar.open {
+  @apply transform-none;
+}
+
+.sidebar.collapsed {
+  @apply w-20;
+}
+
+@media (max-width: 1023px) {
+  .sidebar {
+    @apply -translate-x-full;
+  }
+}
+
+/* Logo area */
+.keep-logo-area {
+  @apply flex items-center gap-2 py-3 px-3 rounded-lg hover:bg-muted/70 transition-colors cursor-pointer;
+}
+
+.logo-icon {
+  @apply flex-shrink-0 text-primary;
+}
+
+.keep-logo-text {
+  @apply text-xl font-bold transition-opacity duration-200;
+}
+
+.sidebar.collapsed .keep-logo-text {
+  @apply opacity-0 hidden;
+}
+
+/* Navigation items */
+.keep-nav-item {
+  @apply flex items-center gap-3 px-3 py-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-colors mb-1;
+}
+
+.keep-nav-item.active {
+  @apply bg-muted text-foreground;
+}
+
+.keep-nav-icon {
+  @apply w-5 h-5 flex-shrink-0;
+}
+
+.keep-nav-text {
+  @apply transition-opacity duration-200;
+}
+
+.sidebar.collapsed .keep-nav-text {
+  @apply opacity-0 hidden;
+}
+
+/* Main content */
+.main-content {
+  @apply ml-0 lg:ml-64 transition-all duration-300;
+}
+
+.main-content.sidebar-collapsed {
+  @apply lg:ml-20;
+}
+
+/* 
+  NOTE: .content-top-bar, .search-bar, and .user-controls were removed.
+  Their styling is now handled directly in Layout.jsx with Tailwind utility
+  classes to create a single, responsive header and avoid conflicts.
+*/
+
+/* This class can be kept if you use it on other buttons */
+.user-control-btn {
+  @apply w-9 h-9 flex items-center justify-center transition-all duration-200;
+}
+
+/* Auth pages */
+.auth-container {
+  @apply min-h-screen flex flex-col items-center justify-center px-2 sm:px-4 lg:px-6 py-4 sm:py-8 lg:py-10 relative overflow-hidden;
+}
+
+.auth-card {
+  @apply bg-card border border-border/30 rounded-xl shadow-lg w-full max-w-md p-4 sm:p-6 lg:p-8;
+}
+
+.auth-header {
+  @apply mb-6 sm:mb-8 text-center;
+}
+
+.auth-logo {
+  @apply mx-auto w-10 h-10 sm:w-12 sm:h-12 bg-primary/20 text-primary rounded-xl flex items-center justify-center mb-4 sm:mb-6;
+}
+
+.auth-title {
+  @apply text-xl sm:text-2xl font-bold text-foreground mb-2;
+}
+
+.auth-subtitle {
+  @apply text-sm sm:text-base text-muted-foreground;
+}
+
+.auth-link {
+  @apply text-primary hover:text-primary/80 transition-colors font-medium;
+}
+
+.auth-form {
+  @apply space-y-4 sm:space-y-6;
+}
+
+.auth-error {
+  @apply bg-destructive/10 border border-destructive/30 text-destructive p-3 rounded-md flex items-center gap-2 mb-4 sm:mb-6 text-sm;
+}
+
+.auth-success {
+  @apply text-center p-6 sm:p-8 space-y-4;
+}
+
+/* Nothing UI inspired components */
+.nothing-btn-primary {
+  @apply bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 px-4 sm:px-5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base;
+}
+
+.nothing-btn-secondary {
+  @apply bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2.5 px-4 sm:px-5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base;
+}
+
+.nothing-btn-ghost {
+  @apply bg-transparent hover:bg-muted text-foreground border border-border/50 py-2.5 px-4 sm:px-5 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base;
+}
+
+.nothing-input {
+  @apply bg-card border border-border/50 focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none rounded-lg py-2.5 px-3 sm:px-4 text-foreground placeholder-muted-foreground w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base;
+}
+
+.nothing-card {
+  @apply bg-card border border-border/50 rounded-lg;
+}
+
+/* Custom color accents */
+.red-accent {
+  @apply text-primary;
+}
+
+/* Empty state */
+.empty-state-full {
+  @apply min-h-[70vh] flex items-center justify-center p-6;
+}
+
+/* Tags */
+.tag-pill {
+  @apply px-2 py-1 text-xs rounded-full bg-muted text-muted-foreground;
+}
+
+/* Masonry grid for notes */
+.masonry-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 px-4 sm:px-6;
+}
+
+.note-card {
+  @apply bg-card border border-border/30 hover:border-border/80 p-3 sm:p-4 rounded-lg transition-all cursor-pointer;
+}
+
+/* Enhanced Mobile Responsiveness */
+
+/* Mobile-first content padding */
+.mobile-content {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+/* Mobile typography improvements */
+@media (max-width: 640px) {
+  .mobile-title {
+    @apply text-xl font-bold;
+  }
+  
+  .mobile-subtitle {
+    @apply text-sm text-muted-foreground;
+  }
+  
+  .mobile-body {
+    @apply text-sm leading-relaxed;
+  }
+}
+
+/* Mobile button improvements */
+.mobile-btn {
+  @apply px-4 py-2.5 text-sm font-medium rounded-lg transition-colors;
+  @apply sm:px-5 sm:py-3 sm:text-base;
+}
+
+/* Mobile form improvements */
+.mobile-form-group {
+  @apply space-y-4 sm:space-y-5;
+}
+
+.mobile-input {
+  @apply w-full px-3 py-3 text-base rounded-lg border border-border/50;
+  @apply sm:px-4 sm:py-3.5 sm:text-sm;
+  @apply focus:ring-2 focus:ring-primary/20 focus:border-primary;
+  @apply transition-all duration-200;
+  @apply bg-card text-foreground placeholder-muted-foreground;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Mobile navigation improvements */
+@media (max-width: 1023px) {
+  .main-content {
+    @apply ml-0;
+  }
+}
+
+/* Mobile grid improvements */
+@media (max-width: 640px) {
+  .mobile-grid-1 {
+    @apply grid-cols-1 gap-3;
+  }
+  
+  .mobile-flex-stack {
+    @apply flex-col items-stretch gap-3;
+  }
+}
+
+/* Mobile card improvements */
+.mobile-card {
+  @apply bg-card border border-border/30 rounded-lg overflow-hidden;
+  @apply p-3 sm:p-4 lg:p-6;
+}
+
+/* Mobile modal/dialog improvements */
+@media (max-width: 640px) {
+  .mobile-modal {
+    @apply m-0 max-h-screen rounded-none;
+  }
+  
+  .mobile-modal-content {
+    @apply p-4 max-h-[90vh] overflow-y-auto;
+  }
+}
+
+/* Mobile sticky elements */
+.mobile-sticky-top {
+  @apply sticky top-0 z-30 bg-background/95 backdrop-blur-sm;
+}
+
+/* Mobile touch targets */
+.mobile-touch-target {
+  @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+}
+
+/* Mobile safe areas */
+.mobile-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Mobile spacing improvements */
+.mobile-section {
+  @apply py-6 sm:py-8 lg:py-12;
+}
+
+.mobile-gap {
+  @apply gap-3 sm:gap-4 lg:gap-6;
+}
+
+/* Line clamp utilities for better text truncation */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Mobile-first button variants */
+.btn-primary {
+  @apply nothing-btn-primary mobile-touch-target;
+}
+
+.btn-secondary {
+  @apply nothing-btn-secondary mobile-touch-target;
+}
+
+.btn-ghost {
+  @apply nothing-btn-ghost mobile-touch-target;
+}
+
+/* Mobile optimized containers */
+.container-mobile {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Mobile-first grid system */
+.grid-mobile-1 {
+  @apply grid grid-cols-1 gap-4;
+}
+
+.grid-mobile-2 {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+}
+
+.grid-mobile-3 {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+.grid-mobile-4 {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+}
+
+/* Mobile navigation improvements */
+.mobile-nav-item {
+  @apply flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-colors mobile-touch-target;
+}
+
+/* Safe area support for devices with notches */
+.safe-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-left {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-right {
+  padding-right: env(safe-area-inset-right);
 }
 
 /* Ensure proper text colors in both themes */
@@ -200,7 +544,7 @@ body {
   /* Masonry Grid for Google Keep style */
   .masonry-grid {
     column-count: 1;
-    column-gap: 1rem;
+    column-gap: 1.5rem;
     @apply space-y-4;
   }
   
@@ -212,13 +556,13 @@ body {
   
   @media (min-width: 1024px) {
     .masonry-grid {
-      column-count: 3;
+      column-count: 2;
     }
   }
   
   @media (min-width: 1280px) {
     .masonry-grid {
-      column-count: 4;
+      column-count: 3;
     }
   }
   
@@ -228,7 +572,7 @@ body {
   
   /* Note Cards */
   .note-card {
-    @apply nothing-card p-4 cursor-pointer;
+    @apply nothing-card p-6 cursor-pointer;
   }
   
   .note-card:hover {
@@ -976,14 +1320,18 @@ body {
 
 /* Input text visibility */
 .light .nothing-input,
-.dark .nothing-input {
+.light .mobile-input,
+.dark .nothing-input,
+.dark .mobile-input {
   color: hsl(var(--foreground));
   background-color: hsl(var(--input));
   border-color: hsl(var(--border));
 }
 
 .light .nothing-input::placeholder,
-.dark .nothing-input::placeholder {
+.light .mobile-input::placeholder,
+.dark .nothing-input::placeholder,
+.dark .mobile-input::placeholder {
   color: hsl(var(--muted-foreground));
 }
 
@@ -1197,12 +1545,14 @@ label {
 
 /* Input text visibility fixes */
 .light input,
-.light .nothing-input {
+.light .nothing-input,
+.light .mobile-input {
   color: hsl(0 0% 8%) !important;
 }
 
 .dark input,
-.dark .nothing-input {
+.dark .nothing-input,
+.dark .mobile-input {
   color: hsl(0 0% 98%) !important;
 }
 
@@ -1233,4 +1583,79 @@ label {
 [class*="text-primary"],
 .red-accent {
   color: hsl(var(--primary)) !important;
+}
+
+/* Enhanced Mobile Viewport Support */
+@viewport {
+  width: device-width;
+  zoom: 1.0;
+}
+
+/* Mobile-specific utilities */
+@media (max-width: 640px) {
+  /* Improve touch targets */
+  button, .btn, [role="button"], input[type="button"], input[type="submit"] {
+    @apply min-h-[44px] min-w-[44px];
+  }
+  
+  /* Better font scaling */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Mobile form improvements */
+  input, textarea, select {
+    @apply text-base; /* Prevents zoom on iOS */
+  }
+  
+  /* Stack flex items on mobile */
+  .mobile-stack {
+    @apply flex-col gap-3;
+  }
+  
+  /* Full width buttons on mobile */
+  .mobile-full-btn {
+    @apply w-full;
+  }
+}
+
+/* Tablet improvements */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .tablet-responsive {
+    @apply px-6;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Optimize for high DPI displays */
+  .high-dpi-text {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus improvements for accessibility */
+@media (any-hover: none) and (any-pointer: coarse) {
+  /* Touch device specific styles */
+  button:hover {
+    /* Disable hover effects on touch devices */
+    background-color: inherit;
+  }
 }

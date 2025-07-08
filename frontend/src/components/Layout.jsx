@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, Home, Plus, Tag, Settings, LogOut, Zap, Hash, BookOpen, Search, Filter, Sun, Moon, Archive, Lock } from 'lucide-react';
+import { Menu, Home, Plus, Settings, LogOut, Zap, Hash, Search, Filter, Sun, Moon, Archive, Lock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSearch } from '../context/SearchContext';
 import { useTheme } from '../context/ThemeContext';
@@ -12,8 +12,26 @@ const Layout = ({ children }) => {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const [placeholderText, setPlaceholderText] = useState('SkillCache');
+  const [textOpacity, setTextOpacity] = useState(1);
+
+  useEffect(() => {
+    // On mount, animate from SkillCache to "Search your notes..."
+    const timeout1 = setTimeout(() => {
+      setTextOpacity(0);
+      setTimeout(() => {
+        setPlaceholderText('Search your notes...');
+        setTextOpacity(1);
+      }, 300);
+    }, 2000); // Show SkillCache for 2s
+
+    return () => {
+      clearTimeout(timeout1);
+    };
+  }, []);
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
@@ -25,14 +43,6 @@ const Layout = ({ children }) => {
 
   const isActive = (path) => location.pathname === path;
   
-  // Show search bar on all main pages except auth pages
-  const showSearchBar = location.pathname === '/' || 
-                       location.pathname === '/dashboard' ||
-                       location.pathname === '/categories' ||
-                       location.pathname === '/archive' ||
-                       location.pathname === '/vaults' ||
-                       location.pathname === '/add-note';
-
   const handleLogout = async () => {
     try {
       await logout();
@@ -44,16 +54,11 @@ const Layout = ({ children }) => {
   };
 
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-background">
-        {children}
-      </div>
-    );
+    return <div className="min-h-screen bg-background">{children}</div>;
   }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Sidebar Overlay for Mobile */}
       {sidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
@@ -61,152 +66,174 @@ const Layout = ({ children }) => {
         />
       )}
 
-      {/* Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="flex flex-col h-full">
-          {/* Logo Section */}
           <div className="flex-shrink-0 mb-4">
             <div 
               className="keep-logo-area"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSidebarCollapsed(!sidebarCollapsed);
-              }}
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
-              <div className="logo-icon">
-                <Zap size={28} />
-              </div>
-              <span className="keep-logo-text">
-                Skill<span className="text-primary">Cache</span>
-              </span>
+              <div className="logo-icon"><Zap size={28} /></div>
+              <span className="keep-logo-text">Skill<span className="text-primary">Cache</span></span>
             </div>
           </div>
-
-          {/* Navigation Section */}
-          <div className="flex-1">
-            <nav>
-              {navigation.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    onClick={() => setSidebarOpen(false)}
-                    className={`keep-nav-item ${isActive(item.href) ? 'active' : ''}`}
-                    title={sidebarCollapsed ? item.name : ''}
-                  >
-                    <Icon className="keep-nav-icon" />
-                    <span className="keep-nav-text">{item.name}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-
-          {/* Bottom Section with Settings and Logout */}
+          <nav className="flex-1">
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`keep-nav-item ${isActive(item.href) ? 'active' : ''}`}
+                  title={sidebarCollapsed ? item.name : ''}
+                >
+                  <Icon className="keep-nav-icon" />
+                  <span className="keep-nav-text">{item.name}</span>
+                </Link>
+              );
+            })}
+          </nav>
           <div className="flex-shrink-0 mt-4 pt-4 border-t border-border/30">
-            <div className="space-y-1">
-              <Link
-                to="/settings"
-                onClick={() => setSidebarOpen(false)}
-                className="keep-nav-item"
-                title={sidebarCollapsed ? 'Settings' : ''}
+            {/* User avatar for mobile: show only on mobile (flex sm:hidden) and styled as a sidebar item */}
+            <Link
+              to="/settings"
+              onClick={() => setSidebarOpen(false)}
+              className={`keep-nav-item sm:hidden flex items-center py-3 overflow-hidden ${sidebarCollapsed ? '' : 'gap-3 px-3 mb-2 rounded-lg'}`}
+              style={sidebarCollapsed ? { minHeight: '48px', padding: 0, margin: 0, borderRadius: 0, width: '100%' } : { minHeight: '48px' }}
+            >
+              <div
+                className="w-10 h-10 bg-primary/20 border border-border/30 rounded-full flex items-center justify-center flex-shrink-0"
+                style={sidebarCollapsed ? { margin: '0 auto', display: 'block' } : {}}
+                title={currentUser?.displayName || currentUser?.email || 'User'}
               >
-                <Settings className="keep-nav-icon" />
-                <span className="keep-nav-text">Settings</span>
-              </Link>
-              
-              <button
-                onClick={handleLogout}
-                className="keep-nav-item w-full text-left"
-                title={sidebarCollapsed ? 'Sign out' : ''}
-              >
-                <LogOut className="keep-nav-icon" />
-                <span className="keep-nav-text">Sign out</span>
-              </button>
-            </div>
+                <span
+                  className="text-base font-medium text-primary"
+                  style={sidebarCollapsed ? { display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', lineHeight: 'normal', width: '100%', height: '100%' } : {}}
+                >
+                  {currentUser?.displayName?.[0] || currentUser?.email?.[0] || 'U'}
+                </span>
+              </div>
+              {/* Only show name/email if sidebar is not collapsed */}
+              {!sidebarCollapsed && (
+                <div className="flex flex-col items-start ml-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{currentUser?.displayName || 'User'}</p>
+                  <p className="text-xs text-muted-foreground truncate">{currentUser?.email}</p>
+                </div>
+              )}
+            </Link>
+            {/* Add spacing below avatar on mobile */}
+            <div className="sm:hidden" style={{ marginBottom: 16 }} />
+            <Link to="/settings" onClick={() => setSidebarOpen(false)} className={`keep-nav-item ${isActive('/settings') ? 'active' : ''}`} title={sidebarCollapsed ? 'Settings' : ''}>
+              <Settings className="keep-nav-icon" />
+              <span className="keep-nav-text">Settings</span>
+            </Link>
+            <button onClick={handleLogout} className="keep-nav-item w-full text-left" title={sidebarCollapsed ? 'Sign out' : ''}>
+              <LogOut className="keep-nav-icon" />
+              <span className="keep-nav-text">Sign out</span>
+            </button>
           </div>
         </div>
       </aside>
 
-      {/* Main Content */}
       <div className={`main-content ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-        {/* Mobile Header */}
-        <header className="lg:hidden sticky top-0 z-30 bg-background/95 backdrop-blur-xl border-b border-border/30">
-          <div className="px-4 py-3 flex items-center justify-between">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="btn-ghost p-2"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
+        <header className="w-full bg-background/95 backdrop-blur-sm border-b-2 border-border/60 min-h-[80px]">
+          <div className="flex items-center h-20 px-2 sm:px-6">
             
-            <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded-lg bg-primary flex items-center justify-center">
-                <Zap className="h-3 w-3 text-primary-foreground" />
-              </div>
-              <span className="text-lg font-bold text-foreground">
-                Skill<span className="text-primary">Cache</span>
-              </span>
+            <div className="flex-shrink-0">
+              {/* --- CHANGE IS HERE --- */}
+              <button onClick={() => setSidebarOpen(true)} className="p-2 sm:hidden" aria-label="Open navigation menu">
+                <Menu className="h-6 w-6 text-primary transition-opacity hover:opacity-80" />
+              </button>
             </div>
-            
-            <div className="w-10" /> {/* Spacer for centering */}
-          </div>
-        </header>
 
-        {/* Page Content */}
-        <main>
-          {/* Top Bar with Search and User Controls */}
-          <div className="content-top-bar">
-            {/* Search Bar - only show on dashboard */}
-            {showSearchBar && (
-              <div className="search-bar">
-                <Search className="h-5 w-5 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground"
-                />
-                <Filter className="h-5 w-5 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" />
-              </div>
-            )}
-            
-            {/* User Controls */}
-            <div className="user-controls ml-auto">
-              {/* Theme Toggle */}
+            <div className="flex-1 flex items-center px-2 sm:px-4">
+                {/* Mobile Search Input */}
+                <div className="relative flex items-center w-full sm:hidden gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] border-2 border-primary/40 shadow-sm">
+                    <div className="relative flex items-center w-full">
+                        <Search size={24} className="z-10 mr-4" />
+                        <input
+                            type="text"
+                            className="bg-transparent outline-none border-0 flex-1 text-base truncate transition-opacity duration-300 z-10"
+                            style={{ opacity: textOpacity }}
+                            placeholder={
+                                placeholderText === 'SkillCache'
+                                    ? ''
+                                    : placeholderText
+                            }
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            aria-label="Search notes"
+                        />
+                        {placeholderText === 'SkillCache' && !searchQuery && (
+                            <span
+                                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold select-none pointer-events-none flex items-center justify-center w-full z-20"
+                                style={{ opacity: textOpacity }}
+                            >
+                                <span className="text-white">Skill</span><span className="text-primary" style={{ color: '#ef4444' }}>Cache</span>
+                            </span>
+                        )}
+                    </div>
+                </div>
+
+                {/* Desktop Search Input */}
+                <div className="hidden sm:flex items-center w-full gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] transition-all duration-300 border-2 border-primary/40 shadow-sm max-w-md">
+                    <div className="relative flex items-center w-full">
+                        <Search size={24} className="z-10 mr-4" />
+                        <input
+                            type="text"
+                            className="bg-transparent outline-none border-0 flex-1 text-base truncate transition-opacity duration-300 z-10"
+                            style={{ opacity: textOpacity }}
+                            placeholder={
+                                placeholderText === 'SkillCache'
+                                    ? ''
+                                    : placeholderText
+                            }
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            aria-label="Search notes"
+                        />
+                        {placeholderText === 'SkillCache' && !searchQuery && (
+                            <span
+                                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold select-none pointer-events-none flex items-center justify-center w-full z-20"
+                                style={{ opacity: textOpacity }}
+                            >
+                                <span className="text-white">Skill</span><span className="text-primary" style={{ color: '#ef4444' }}>Cache</span>
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex items-center gap-3 flex-shrink-0 sm:gap-2 min-h-[56px] pr-2 sm:pr-4">
               <button
                 onClick={toggleTheme}
-                className="user-control-btn hover:bg-muted border border-transparent hover:border-border/30 rounded-full"
+                className="w-9 h-9 flex items-center justify-center hover:bg-muted rounded-full border-2 border-primary/40"
                 title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
-
-              {/* User Avatar and Info Display */}
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-transparent">
+              {/* User avatar and info: only show on desktop (sm+) */}
+              <div className="hidden sm:flex items-center gap-3 sm:gap-3 min-h-[56px]">
                 <div 
-                  className="user-control-btn bg-primary/20 border border-border/30 rounded-full"
+                  className="w-10 h-10 bg-primary/20 border border-border/30 rounded-full flex items-center justify-center flex-shrink-0"
                   title={currentUser?.displayName || currentUser?.email || 'User'}
                 >
-                  <span className="text-sm font-medium text-primary">
+                  <span className="text-base font-medium text-primary">
                     {currentUser?.displayName?.[0] || currentUser?.email?.[0] || 'U'}
                   </span>
                 </div>
                 <div className="hidden sm:flex flex-col items-start">
-                  <p className="text-sm font-medium text-foreground">
-                    {currentUser?.displayName || 'User'}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {currentUser?.email}
-                  </p>
+                  <p className="text-sm font-medium text-foreground">{currentUser?.displayName || 'User'}</p>
+                  <p className="text-xs text-muted-foreground">{currentUser?.email}</p>
                 </div>
               </div>
             </div>
           </div>
+        </header>
 
+        <main className="p-4 sm:p-6">
           {children}
         </main>
       </div>

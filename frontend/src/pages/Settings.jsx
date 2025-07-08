@@ -191,13 +191,13 @@ const Settings = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+    <div className="max-w-4xl mx-auto mobile-content mobile-section space-y-4 lg:space-y-6">
       <div className="flex items-center gap-3 mb-5">
         <div className="p-2 bg-primary/10 rounded-lg">
-          <User className="h-6 w-6 text-primary" />
+          <User className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">Settings</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-foreground">Settings</h1>
           <p className="text-muted-foreground text-sm">Manage your account and preferences</p>
         </div>
       </div>
@@ -211,12 +211,12 @@ const Settings = () => {
         </div>
       )}
 
-      <div className="grid gap-4">
+      <div className="grid gap-4 lg:gap-6">
         {/* Profile Settings */}
         <div className="bg-card border border-border rounded-lg p-4 shadow-sm">
-          <div className="flex items-center gap-2 mb-3">
-            <User className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-medium text-foreground">Profile Information</h2>
+          <div className="flex items-center gap-2 mb-3 lg:mb-4">
+            <User className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <h2 className="text-base sm:text-lg font-medium text-foreground">Profile Information</h2>
           </div>
           
           <form onSubmit={handleSaveProfile} className="space-y-3">
