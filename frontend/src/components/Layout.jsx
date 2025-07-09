@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, Home, Plus, Settings, LogOut, Zap, Hash, Search, Filter, Sun, Moon, Archive, Lock } from 'lucide-react';
+import { Menu, Home, Plus, Settings, LogOut, Zap, Hash, Search, Filter, Sun, Moon, Archive, Lock, Bot } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useSearch } from '../context/SearchContext';
 import { useTheme } from '../context/ThemeContext';
+import AIAssistantChat from './AIAssistantChat';
 
 const Layout = ({ children }) => {
   const { currentUser, logout, isAuthenticated } = useAuth();
@@ -14,6 +15,7 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
 
   const [placeholderText, setPlaceholderText] = useState('SkillCache');
   const [textOpacity, setTextOpacity] = useState(1);
@@ -31,6 +33,29 @@ const Layout = ({ children }) => {
     return () => {
       clearTimeout(timeout1);
     };
+  }, []);
+
+  // Prevent page scroll on AI Assistant page
+  useEffect(() => {
+    if (location.pathname === '/ai-assistant') {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [location.pathname]);
+
+  // Set --app-vh CSS variable for mobile viewport height fix
+  useEffect(() => {
+    function setAppVh() {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--app-vh', `${vh}px`);
+    }
+    setAppVh();
+    window.addEventListener('resize', setAppVh);
+    return () => window.removeEventListener('resize', setAppVh);
   }, []);
 
   const navigation = [
@@ -58,7 +83,7 @@ const Layout = ({ children }) => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-row">
       {sidebarOpen && (
         <div 
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
@@ -66,7 +91,7 @@ const Layout = ({ children }) => {
         />
       )}
 
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`}>
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`} style={{ width: sidebarCollapsed ? '64px' : '240px', minWidth: sidebarCollapsed ? '64px' : '240px', transition: 'width 0.2s' }}>
         <div className="flex flex-col h-full">
           <div className="flex-shrink-0 mb-4">
             <div 
@@ -94,6 +119,15 @@ const Layout = ({ children }) => {
                 </Link>
               );
             })}
+            {/* AI Assistant Button */}
+            <Link
+              to="/ai-assistant"
+              className={`keep-nav-item ${isActive('/ai-assistant') ? 'active' : ''}`}
+              title="AI Assistant"
+            >
+              <Bot className="keep-nav-icon" />
+              <span className="keep-nav-text">AI Assistant</span>
+            </Link>
           </nav>
           <div className="flex-shrink-0 mt-4 pt-4 border-t border-border/30">
             {/* User avatar for mobile: show only on mobile (flex sm:hidden) and styled as a sidebar item */}
@@ -137,103 +171,190 @@ const Layout = ({ children }) => {
         </div>
       </aside>
 
-      <div className={`main-content ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-        <header className="w-full bg-background/95 backdrop-blur-sm border-b-2 border-border/60 min-h-[80px]">
-          <div className="flex items-center h-20 px-2 sm:px-6">
-            
-            <div className="flex-shrink-0">
-              {/* --- CHANGE IS HERE --- */}
-              <button onClick={() => setSidebarOpen(true)} className="p-2 sm:hidden" aria-label="Open navigation menu">
-                <Menu className="h-6 w-6 text-primary transition-opacity hover:opacity-80" />
-              </button>
-            </div>
-
-            <div className="flex-1 flex items-center px-2 sm:px-4">
+      <div className={`main-content flex flex-col ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ flex: 1, minWidth: 0 }}>
+        {location.pathname !== '/ai-assistant' ? (
+          <header className="w-full bg-background/95 backdrop-blur-sm border-b-2 border-border/60 min-h-[80px]">
+            <div className="flex items-center h-20 px-2 sm:px-6">
+              <div className="flex-shrink-0">
+                <button onClick={() => setSidebarOpen(true)} className="p-2 sm:hidden" aria-label="Open navigation menu">
+                  <Menu className="h-6 w-6 text-primary transition-opacity hover:opacity-80" />
+                </button>
+              </div>
+              <div className="flex-1 flex items-center px-2 sm:px-4">
                 {/* Mobile Search Input */}
                 <div className="relative flex items-center w-full sm:hidden gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] border-2 border-primary/40 shadow-sm">
-                    <div className="relative flex items-center w-full">
-                        <Search size={24} className="z-10 mr-4" />
-                        <input
-                            type="text"
-                            className="bg-transparent outline-none border-0 flex-1 text-base truncate transition-opacity duration-300 z-10"
-                            style={{ opacity: textOpacity }}
-                            placeholder={
-                                placeholderText === 'SkillCache'
-                                    ? ''
-                                    : placeholderText
-                            }
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            aria-label="Search notes"
-                        />
-                        {placeholderText === 'SkillCache' && !searchQuery && (
-                            <span
-                                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold select-none pointer-events-none flex items-center justify-center w-full z-20"
-                                style={{ opacity: textOpacity }}
-                            >
-                                <span className="text-white">Skill</span><span className="text-primary" style={{ color: '#ef4444' }}>Cache</span>
-                            </span>
-                        )}
-                    </div>
+                  <div className="relative flex items-center w-full">
+                    <Search size={24} className="z-10 mr-4" />
+                    <input
+                      type="text"
+                      className="bg-transparent outline-none border-0 flex-1 text-base truncate transition-opacity duration-300 z-10"
+                      style={{ opacity: textOpacity }}
+                      placeholder={
+                        placeholderText === 'SkillCache'
+                          ? ''
+                          : placeholderText
+                      }
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      aria-label="Search notes"
+                    />
+                    {placeholderText === 'SkillCache' && !searchQuery && (
+                      <span
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold select-none pointer-events-none flex items-center justify-center w-full z-20"
+                        style={{ opacity: textOpacity }}
+                      >
+                        <span className="text-white">Skill</span><span className="text-primary" style={{ color: '#ef4444' }}>Cache</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
-
                 {/* Desktop Search Input */}
                 <div className="hidden sm:flex items-center w-full gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] transition-all duration-300 border-2 border-primary/40 shadow-sm max-w-md">
-                    <div className="relative flex items-center w-full">
-                        <Search size={24} className="z-10 mr-4" />
-                        <input
-                            type="text"
-                            className="bg-transparent outline-none border-0 flex-1 text-base truncate transition-opacity duration-300 z-10"
-                            style={{ opacity: textOpacity }}
-                            placeholder={
-                                placeholderText === 'SkillCache'
-                                    ? ''
-                                    : placeholderText
-                            }
-                            value={searchQuery}
-                            onChange={e => setSearchQuery(e.target.value)}
-                            aria-label="Search notes"
-                        />
-                        {placeholderText === 'SkillCache' && !searchQuery && (
-                            <span
-                                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold select-none pointer-events-none flex items-center justify-center w-full z-20"
-                                style={{ opacity: textOpacity }}
-                            >
-                                <span className="text-white">Skill</span><span className="text-primary" style={{ color: '#ef4444' }}>Cache</span>
-                            </span>
-                        )}
-                    </div>
+                  <div className="relative flex items-center w-full">
+                    <Search size={24} className="z-10 mr-4" />
+                    <input
+                      type="text"
+                      className="bg-transparent outline-none border-0 flex-1 text-base truncate transition-opacity duration-300 z-10"
+                      style={{ opacity: textOpacity }}
+                      placeholder={
+                        placeholderText === 'SkillCache'
+                          ? ''
+                          : placeholderText
+                      }
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      aria-label="Search notes"
+                    />
+                    {placeholderText === 'SkillCache' && !searchQuery && (
+                      <span
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold select-none pointer-events-none flex items-center justify-center w-full z-20"
+                        style={{ opacity: textOpacity }}
+                      >
+                        <span className="text-white">Skill</span><span className="text-primary" style={{ color: '#ef4444' }}>Cache</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
-            </div>
-
-            <div className="flex items-center gap-3 flex-shrink-0 sm:gap-2 min-h-[56px] pr-2 sm:pr-4">
-              <button
-                onClick={toggleTheme}
-                className="w-9 h-9 flex items-center justify-center hover:bg-muted rounded-full border-2 border-primary/40"
-                title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
-              {/* User avatar and info: only show on desktop (sm+) */}
-              <div className="hidden sm:flex items-center gap-3 sm:gap-3 min-h-[56px]">
-                <div 
-                  className="w-10 h-10 bg-primary/20 border border-border/30 rounded-full flex items-center justify-center flex-shrink-0"
-                  title={currentUser?.displayName || currentUser?.email || 'User'}
+              </div>
+              <div className="flex items-center gap-3 flex-shrink-0 sm:gap-2 min-h-[56px] pr-2 sm:pr-4">
+                <button
+                  onClick={toggleTheme}
+                  className="w-9 h-9 flex items-center justify-center hover:bg-muted rounded-full border-2 border-primary/40"
+                  title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
                 >
-                  <span className="text-base font-medium text-primary">
-                    {currentUser?.displayName?.[0] || currentUser?.email?.[0] || 'U'}
-                  </span>
-                </div>
-                <div className="hidden sm:flex flex-col items-start">
-                  <p className="text-sm font-medium text-foreground">{currentUser?.displayName || 'User'}</p>
-                  <p className="text-xs text-muted-foreground">{currentUser?.email}</p>
+                  {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
+                {/* User avatar and info: only show on desktop (sm+) */}
+                <div className="hidden sm:flex items-center gap-3 sm:gap-3 min-h-[56px]">
+                  <div 
+                    className="w-10 h-10 bg-primary/20 border border-border/30 rounded-full flex items-center justify-center flex-shrink-0"
+                    title={currentUser?.displayName || currentUser?.email || 'User'}
+                  >
+                    <span className="text-base font-medium text-primary">
+                      {currentUser?.displayName?.[0] || currentUser?.email?.[0] || 'U'}
+                    </span>
+                  </div>
+                  <div className="hidden sm:flex flex-col items-start">
+                    <p className="text-sm font-medium text-foreground">{currentUser?.displayName || 'User'}</p>
+                    <p className="text-xs text-muted-foreground">{currentUser?.email}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </header>
+          </header>
+        ) : (
+          <header className="w-full bg-background/95 backdrop-blur-sm border-b-2 border-border/60 min-h-[80px] lg:hidden">
+            <div className="flex items-center h-20 px-2 sm:px-6">
+              <div className="flex-shrink-0">
+                <button onClick={() => setSidebarOpen(true)} className="p-2 lg:hidden" aria-label="Open navigation menu">
+                  <Menu className="h-6 w-6 text-primary transition-opacity hover:opacity-80" />
+                </button>
+              </div>
+              <div className="flex-1 flex items-center px-2 sm:px-4">
+                {/* Mobile Search Input */}
+                <div className="relative flex items-center w-full lg:hidden gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] border-2 border-primary/40 shadow-sm">
+                  <div className="relative flex items-center w-full">
+                    <Search size={24} className="z-10 mr-4" />
+                    <input
+                      type="text"
+                      className="bg-transparent outline-none border-0 flex-1 text-base truncate transition-opacity duration-300 z-10"
+                      style={{ opacity: textOpacity }}
+                      placeholder={
+                        placeholderText === 'SkillCache'
+                          ? ''
+                          : placeholderText
+                      }
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      aria-label="Search notes"
+                    />
+                    {placeholderText === 'SkillCache' && !searchQuery && (
+                      <span
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold select-none pointer-events-none flex items-center justify-center w-full z-20"
+                        style={{ opacity: textOpacity }}
+                      >
+                        <span className="text-white">Skill</span><span className="text-primary" style={{ color: '#ef4444' }}>Cache</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {/* Desktop Search Input */}
+                <div className="hidden lg:flex items-center w-full gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] transition-all duration-300 border-2 border-primary/40 shadow-sm max-w-md">
+                  <div className="relative flex items-center w-full">
+                    <Search size={24} className="z-10 mr-4" />
+                    <input
+                      type="text"
+                      className="bg-transparent outline-none border-0 flex-1 text-base truncate transition-opacity duration-300 z-10"
+                      style={{ opacity: textOpacity }}
+                      placeholder={
+                        placeholderText === 'SkillCache'
+                          ? ''
+                          : placeholderText
+                      }
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      aria-label="Search notes"
+                    />
+                    {placeholderText === 'SkillCache' && !searchQuery && (
+                      <span
+                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold select-none pointer-events-none flex items-center justify-center w-full z-20"
+                        style={{ opacity: textOpacity }}
+                      >
+                        <span className="text-white">Skill</span><span className="text-primary" style={{ color: '#ef4444' }}>Cache</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 flex-shrink-0 sm:gap-2 min-h-[56px] pr-2 sm:pr-4">
+                <button
+                  onClick={toggleTheme}
+                  className="w-9 h-9 flex items-center justify-center hover:bg-muted rounded-full border-2 border-primary/40"
+                  title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                >
+                  {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
+                {/* User avatar and info: only show on desktop (sm+) */}
+                <div className="hidden lg:flex items-center gap-3 sm:gap-3 min-h-[56px]">
+                  <div 
+                    className="w-10 h-10 bg-primary/20 border border-border/30 rounded-full flex items-center justify-center flex-shrink-0"
+                    title={currentUser?.displayName || currentUser?.email || 'User'}
+                  >
+                    <span className="text-base font-medium text-primary">
+                      {currentUser?.displayName?.[0] || currentUser?.email?.[0] || 'U'}
+                    </span>
+                  </div>
+                  <div className="hidden lg:flex flex-col items-start">
+                    <p className="text-sm font-medium text-foreground">{currentUser?.displayName || 'User'}</p>
+                    <p className="text-xs text-muted-foreground">{currentUser?.email}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </header>
+        )}
 
-        <main className="p-4 sm:p-6">
+        <main className={`p-4 sm:p-6 ${location.pathname === '/ai-assistant' ? 'h-full overflow-hidden' : ''}`} style={location.pathname === '/ai-assistant' ? {height: '100%', minHeight: 0, maxHeight: '100vh', overflow: 'hidden'} : {}}>
           {children}
         </main>
       </div>

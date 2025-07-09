@@ -11,6 +11,7 @@ import Categories from './pages/Categories';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AIAssistantChat from './components/AIAssistantChat';
 
 function App() {
   return (
@@ -96,6 +97,16 @@ function App() {
           <ProtectedRoute>
             <Layout>
               <Settings />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/ai-assistant"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AIAssistantChat />
             </Layout>
           </ProtectedRoute>
         }

@@ -6,6 +6,15 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --app-vh: 100vh;
+}
+
 :root {
   /* Dark Theme - Nothing OS Futuristic Black Theme */
   --background: 0 0% 0%;
@@ -1025,7 +1034,8 @@ body {
 
   .auth-link {
     @apply font-semibold text-primary hover:text-primary-hover transition-colors
-           underline decoration-primary/30 hover:decoration-primary/60 underline-offset-2;
+           underline decoration-primary/30 hover:decoration-primary/60 
+           underline-offset-2;
   }
 
   .auth-error {
