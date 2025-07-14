@@ -218,73 +218,73 @@ const Categories = () => {
     );
     
     return (
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="space-y-4">
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
+        <div className="space-y-3 sm:space-y-4">
           {/* Header with Back Button */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
             <button
               onClick={handleBackToCategories}
-              className="p-2 rounded-lg border border-border/50 hover:bg-muted hover:border-border/80 transition-colors"
+              className="p-2 rounded-lg border border-border/50 hover:bg-muted hover:border-border/80 transition-colors mb-2 sm:mb-0"
               title="Back to categories"
             >
-              <ArrowLeft className={`w-6 h-6 ${getIconColorClass(selectedCategory.color)}`} />
+              <ArrowLeft className={`w-5 h-5 sm:w-6 sm:h-6 ${getIconColorClass(selectedCategory.color)}`} />
             </button>
             
-            <div className="flex items-center gap-3">
-              <CategoryIcon className={`w-8 h-8 ${getIconColorClass(selectedCategory.color)}`} />
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+              <CategoryIcon className={`w-7 h-7 sm:w-8 sm:h-8 ${getIconColorClass(selectedCategory.color)}`} />
               <div>
-                <h1 className="text-3xl font-bold text-foreground">{selectedCategory.name}</h1>
-                <p className="text-muted-foreground">{selectedCategory.description}</p>
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{selectedCategory.name}</h1>
+                <p className="text-sm sm:text-base text-muted-foreground">{selectedCategory.description}</p>
               </div>
             </div>
           </div>
 
           {/* Notes List */}
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-foreground">
+              <h2 className="text-lg sm:text-xl font-semibold text-foreground">
                 Notes ({filteredNotes.length})
               </h2>
             </div>
 
             {filteredNotes.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-2">
                 {filteredNotes.map((note) => (
                   <div
                     key={note.id}
-                    className="p-6 bg-card border border-border/50 rounded-lg hover:border-border/80 transition-all"
+                    className="p-4 sm:p-6 bg-card border border-border/50 rounded-lg hover:border-border/80 transition-all"
                   >
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       <div className="flex items-start justify-between">
                         <h3 className="font-semibold text-foreground line-clamp-2 text-base">
                           {note.title}
                         </h3>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 sm:gap-2">
                           <button 
-                            className="p-2 hover:bg-muted rounded" 
+                            className="p-1 sm:p-2 hover:bg-muted rounded" 
                             onClick={() => handlePreviewNote(note)} 
                             title="Preview Note"
                           >
                             <Eye className="h-4 w-4 text-muted-foreground" />
                           </button>
                           <button 
-                            className="p-2 hover:bg-muted rounded" 
+                            className="p-1 sm:p-2 hover:bg-muted rounded" 
                             onClick={() => setNoteToDelete(note)} 
                             title="Delete Note"
                           >
                             <Trash2 className="h-4 w-4 text-muted-foreground" />
                           </button>
-                          <span className={`text-sm font-medium ${getPriorityColor(note.priority)} ml-1`}>
+                          <span className={`text-xs sm:text-sm font-medium ${getPriorityColor(note.priority)} ml-1`}>
                             {note.priority}
                           </span>
                         </div>
                       </div>
                       
-                      <p className="text-sm text-muted-foreground line-clamp-3">
+                      <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3">
                         {note.summary}
                       </p>
                       
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
                         <Calendar className="w-4 h-4" />
                         <span>{new Date(note.createdAt).toLocaleDateString()}</span>
                       </div>
@@ -293,12 +293,12 @@ const Categories = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <div className="text-4xl mb-4">📝</div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
+              <div className="text-center py-8 sm:py-12">
+                <div className="text-3xl sm:text-4xl mb-2 sm:mb-4">📝</div>
+                <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1 sm:mb-2">
                   {searchQuery ? 'No notes found' : 'No notes yet'}
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-xs sm:text-base text-muted-foreground">
                   {searchQuery 
                     ? 'Try adjusting your search terms to find notes in this category.'
                     : 'Create your first note in this category to get started'
@@ -311,37 +311,35 @@ const Categories = () => {
 
         {/* Preview Note Modal */}
         {noteToPreview && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-medium text-foreground">Preview Note</h3>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+              <div className="p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-3 sm:mb-4">
+                  <h3 className="text-lg sm:text-xl font-medium text-foreground">Preview Note</h3>
                   <button 
                     onClick={() => setNoteToPreview(null)} 
                     className="p-1 hover:bg-muted rounded"
                   >
                     <span className="sr-only">Close</span>
-                    <span className="text-2xl">&times;</span>
+                    <span className="text-xl sm:text-2xl">&times;</span>
                   </button>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div>
-                    <h4 className="font-semibold text-foreground text-lg mb-2">{noteToPreview.title}</h4>
-                    <p className="text-muted-foreground">{noteToPreview.summary}</p>
+                    <h4 className="font-semibold text-foreground text-base sm:text-lg mb-1 sm:mb-2">{noteToPreview.title}</h4>
+                    <p className="text-xs sm:text-base text-muted-foreground">{noteToPreview.summary}</p>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Calendar className="w-4 h-4" />
                     <span>Created: {new Date(noteToPreview.createdAt).toLocaleDateString()}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-muted-foreground">Priority:</span>
-                    <span className={`text-sm font-medium ${getPriorityColor(noteToPreview.priority)}`}>
-                      {noteToPreview.priority}
-                    </span>
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <span className="text-xs sm:text-sm font-medium text-muted-foreground">Priority:</span>
+                    <span className={`text-xs sm:text-sm font-medium ${getPriorityColor(noteToPreview.priority)}`}>{noteToPreview.priority}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-muted-foreground">Category:</span>
-                    <span className="text-sm text-foreground">{selectedCategory.name}</span>
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <span className="text-xs sm:text-sm font-medium text-muted-foreground">Category:</span>
+                    <span className="text-xs sm:text-sm text-foreground">{selectedCategory.name}</span>
                   </div>
                 </div>
               </div>
@@ -351,16 +349,16 @@ const Categories = () => {
 
         {/* Delete Note Modal */}
         {noteToDelete && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-sm">
-              <div className="p-6 text-center">
-                <h3 className="text-xl font-medium text-foreground mb-4">Delete Note?</h3>
-                <p className="text-muted-foreground mb-6">Are you sure you want to delete "{noteToDelete.title}"? This action cannot be undone.</p>
-                <div className="flex items-center justify-center gap-3">
-                  <button onClick={() => setNoteToDelete(null)} className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-sm">
+              <div className="p-4 sm:p-6 text-center">
+                <h3 className="text-lg sm:text-xl font-medium text-foreground mb-2 sm:mb-4">Delete Note?</h3>
+                <p className="text-xs sm:text-base text-muted-foreground mb-4 sm:mb-6">Are you sure you want to delete "{noteToDelete.title}"? This action cannot be undone.</p>
+                <div className="flex items-center justify-center gap-2 sm:gap-3">
+                  <button onClick={() => setNoteToDelete(null)} className="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                     Cancel
                   </button>
-                  <button onClick={handleDeleteNote} className="px-4 py-2 text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                  <button onClick={handleDeleteNote} className="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
                     Delete
                   </button>
                 </div>
@@ -383,22 +381,22 @@ const Categories = () => {
   );
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <div className="space-y-8">
+    <div className="max-w-6xl mx-auto px-2 sm:px-6 py-4 sm:py-8">
+      <div className="space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <Hash className="w-10 h-10 text-primary" />
+        <div className="space-y-2 sm:space-y-4">
+          <div className="flex flex-row items-center gap-2 sm:gap-3">
+            <Hash className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Categories</h1>
-              <p className="text-muted-foreground">Organize your notes by categories</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Categories</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">Organize your notes by categories</p>
             </div>
           </div>
         </div>
 
         {/* Categories Grid */}
         {filteredCategories.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             {filteredCategories.map((category) => {
               const Icon = category.icon;
               
@@ -406,22 +404,22 @@ const Categories = () => {
                 <div
                   key={category.id}
                   onClick={() => handleCategorySelect(category)}
-                  className={`p-6 rounded-lg border transition-all cursor-pointer ${getColorClasses(category.color)}`}
+                  className={`p-4 sm:p-6 rounded-lg border transition-all cursor-pointer ${getColorClasses(category.color)}`}
                 >
                   {/* Category Icon */}
-                  <div className="mb-4">
-                    <Icon className={`w-8 h-8 ${getIconColorClass(category.color)}`} />
+                  <div className="mb-3 sm:mb-4">
+                    <Icon className={`w-7 h-7 sm:w-8 sm:h-8 ${getIconColorClass(category.color)}`} />
                   </div>
 
                   {/* Category Info */}
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-foreground">
+                  <div className="space-y-1 sm:space-y-2">
+                    <h3 className="text-base sm:text-lg font-semibold text-foreground">
                       {category.name}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {category.description}
                     </p>
-                    <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center justify-between pt-1 sm:pt-2">
                       <span className="text-xs text-muted-foreground">
                         {category.noteCount} notes
                       </span>
@@ -435,12 +433,12 @@ const Categories = () => {
             })}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">
+          <div className="text-center py-8 sm:py-12">
+            <div className="text-4xl sm:text-6xl mb-2 sm:mb-4">🔍</div>
+            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-1 sm:mb-2">
               No categories found
             </h3>
-            <p className="text-muted-foreground">
+            <p className="text-xs sm:text-base text-muted-foreground">
               Try adjusting your search terms to find categories or notes.
             </p>
           </div>

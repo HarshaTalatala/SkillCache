@@ -206,54 +206,52 @@ const VaultDetail = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <div className="space-y-8">
+    <div className="max-w-6xl mx-auto px-2 sm:px-6 py-4 sm:py-8">
+      <div className="space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
               onClick={() => navigate('/vaults')}
               className="p-2 rounded-xl hover:bg-muted transition-colors"
               title="Back to vaults"
             >
-              <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
             </button>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {vault.isPrivate ? (
-                <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center border-2 border-primary/30">
-                  <Lock className="w-6 h-6 text-primary" />
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center border-2 border-primary/30">
+                  <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
               ) : (
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500/20 to-green-600/30 rounded-2xl flex items-center justify-center border-2 border-green-500/30">
-                  <Unlock className="w-6 h-6 text-green-500" />
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500/20 to-green-600/30 rounded-2xl flex items-center justify-center border-2 border-green-500/30">
+                  <Unlock className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
                 </div>
               )}
-              
               <div>
-                <h1 className="text-3xl font-medium text-foreground">{vault.name}</h1>
-                <p className="text-muted-foreground">{vault.description || 'No description'}</p>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-medium text-foreground">{vault.name}</h1>
+                <p className="text-xs sm:text-base text-muted-foreground">{vault.description || 'No description'}</p>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-2 sm:mt-0 w-full flex-1">
             {userRole === 'owner' && (
-              <span className="nothing-btn-ghost nothing-input flex items-center gap-2 px-3 py-2 font-medium" style={{ fontSize: '0.95em' }}>Owner</span>
+              <span className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base col-span-2 sm:col-span-4">Owner</span>
             )}
             {userRole === 'edit' && (
-              <span className="px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200">Editor</span>
+              <span className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200 col-span-2 sm:col-span-4">Editor</span>
             )}
             {userRole === 'view' && (
-              <span className="px-3 py-1.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-800 border border-gray-200">Viewer</span>
+              <span className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-gray-100 text-gray-800 border border-gray-200 col-span-2 sm:col-span-4">Viewer</span>
             )}
 
             {canEdit && (
               <button
                 onClick={() => handleOpenNoteModal()}
-                className="nothing-btn-ghost nothing-input flex items-center gap-2 px-3 py-2 font-medium"
-                style={{ fontSize: '0.95em' }}
-              >
+                className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base w-full"
+                >
                 <Plus className="w-4 h-4" />
                 Add Note
               </button>
@@ -262,9 +260,8 @@ const VaultDetail = () => {
             {(userRole === 'owner' || userRole === 'edit') && (
               <button
                 onClick={() => setIsInviteModalOpen(true)}
-                className="nothing-btn-ghost nothing-input flex items-center gap-2 px-3 py-2 font-medium"
-                style={{ fontSize: '0.95em' }}
-              >
+                className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base w-full"
+                >
                 <Users className="w-4 h-4" />
                 Invite
               </button>
@@ -272,8 +269,7 @@ const VaultDetail = () => {
 
             <button
               onClick={() => setShowMembersModal(true)}
-              className="nothing-btn-ghost nothing-input flex items-center gap-2 px-3 py-2 font-medium"
-              style={{ fontSize: '0.95em' }}
+              className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base w-full"
               title="View Members"
             >
               <Users className="w-4 h-4" />
@@ -283,8 +279,7 @@ const VaultDetail = () => {
             {userRole === 'owner' && (
               <button
                 onClick={() => setIsEditVaultModalOpen(true)}
-                className="nothing-btn-ghost nothing-input flex items-center gap-2 px-3 py-2 font-medium"
-                style={{ fontSize: '0.95em' }}
+                className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base w-full"
                 title="Edit Vault"
               >
                 <Edit className="w-4 h-4" />
@@ -295,8 +290,7 @@ const VaultDetail = () => {
             {userRole === 'owner' && (
               <button
                 onClick={() => setIsDeleteVaultModalOpen(true)}
-                className="nothing-btn-ghost nothing-input flex items-center gap-2 px-3 py-2 font-medium"
-                style={{ fontSize: '0.95em' }}
+                className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base w-full"
                 title="Delete Vault"
               >
                 <Trash2 className="w-4 h-4" />
@@ -307,7 +301,7 @@ const VaultDetail = () => {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
@@ -315,20 +309,20 @@ const VaultDetail = () => {
               placeholder="Search notes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="nothing-input pl-10"
+              className="nothing-input pl-10 text-xs sm:text-base"
             />
           </div>
         </div>
 
         {/* Notes Grid */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {filteredNotes.length === 0 ? (
-            <div className="text-center py-16">
-              <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-foreground mb-2">
+            <div className="text-center py-8 sm:py-16">
+              <FileText className="w-10 h-10 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-2 sm:mb-4" />
+              <h3 className="text-base sm:text-xl font-medium text-foreground mb-1 sm:mb-2">
                 {vaultNotes.length === 0 ? 'No notes yet' : 'No notes match your filters'}
               </h3>
-              <p className="text-muted-foreground mb-6">
+              <p className="text-xs sm:text-base text-muted-foreground mb-4 sm:mb-6">
                 {vaultNotes.length === 0 
                   ? canEdit 
                     ? 'Start building your knowledge vault by adding your first note.'
@@ -338,12 +332,12 @@ const VaultDetail = () => {
               </p>
             </div>
           ) : (
-            <div className="masonry-grid">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
               {filteredNotes.map((note) => (
-                <div key={note.id} className="masonry-item">
-                  <div className="nothing-card p-6 hover:shadow-lg transition-all duration-300 cursor-pointer group">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="font-medium text-lg text-foreground line-clamp-2">
+                <div key={note.id} className="">
+                  <div className="nothing-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300 cursor-pointer group">
+                    <div className="flex justify-between items-start mb-2 sm:mb-3">
+                      <h3 className="font-medium text-base sm:text-lg text-foreground line-clamp-2">
                         {note.title}
                       </h3>
                       {canEdit && (
@@ -357,13 +351,11 @@ const VaultDetail = () => {
                         </div>
                       )}
                     </div>
-                    
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-2 sm:mb-4 line-clamp-3">
                       {note.content}
                     </p>
-                    
                     {note.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mb-4">
+                      <div className="flex flex-wrap gap-1 mb-2 sm:mb-4">
                         {note.tags.map(tag => (
                           <span key={tag} className="tag-pill">
                             <Tag className="w-3 h-3" />
@@ -372,7 +364,6 @@ const VaultDetail = () => {
                         ))}
                       </div>
                     )}
-                    
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>by {note.createdBy}</span>
                       <div className="flex items-center gap-1">
@@ -389,9 +380,9 @@ const VaultDetail = () => {
 
         {/* Notes Modals */}
         {isNoteModalOpen && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-md">
-              <div className="p-6">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-md">
+              <div className="p-4 sm:p-6">
                 <h3 className="text-xl font-medium text-foreground mb-4">{isEditNote ? 'Edit Note' : 'Add Note'}</h3>
                 <form onSubmit={handleSaveNote} className="space-y-4">
                   <div>
@@ -416,9 +407,9 @@ const VaultDetail = () => {
           </div>
         )}
         {noteToDelete && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-sm">
-              <div className="p-6 text-center">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-sm">
+              <div className="p-4 sm:p-6 text-center">
                 <h3 className="text-xl font-medium text-foreground mb-4">Delete Note?</h3>
                 <p className="text-muted-foreground mb-6">Are you sure you want to delete this note? This action cannot be undone.</p>
                 <div className="flex items-center justify-center gap-3">
@@ -431,9 +422,9 @@ const VaultDetail = () => {
         )}
         {/* Member Modals */}
         {isInviteModalOpen && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-md">
-              <div className="p-6">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-md">
+              <div className="p-4 sm:p-6">
                 <h3 className="text-xl font-medium text-foreground mb-4">Invite Member</h3>
                 <form onSubmit={handleInviteMember} className="space-y-4">
                   <div>
@@ -457,9 +448,9 @@ const VaultDetail = () => {
           </div>
         )}
         {memberToRemove && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-sm">
-              <div className="p-6 text-center">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-sm">
+              <div className="p-4 sm:p-6 text-center">
                 <h3 className="text-xl font-medium text-foreground mb-4">Remove Member?</h3>
                 <p className="text-muted-foreground mb-6">Are you sure you want to remove this member?</p>
                 <div className="flex items-center justify-center gap-3">
@@ -472,9 +463,9 @@ const VaultDetail = () => {
         )}
         {/* Vault Edit/Delete Modals */}
         {isEditVaultModalOpen && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-md">
-              <div className="p-6">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-md">
+              <div className="p-4 sm:p-6">
                 <h3 className="text-xl font-medium text-foreground mb-4">Edit Vault</h3>
                 <form onSubmit={handleEditVault} className="space-y-4">
                   <div>
@@ -499,9 +490,9 @@ const VaultDetail = () => {
           </div>
         )}
         {isDeleteVaultModalOpen && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-sm">
-              <div className="p-6 text-center">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-sm">
+              <div className="p-4 sm:p-6 text-center">
                 <h3 className="text-xl font-medium text-foreground mb-4">Delete Vault?</h3>
                 <p className="text-muted-foreground mb-6">Are you sure you want to delete this vault? This action cannot be undone.</p>
                 <div className="flex items-center justify-center gap-3">
@@ -513,9 +504,9 @@ const VaultDetail = () => {
           </div>
         )}
         {showMembersModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-2xl">
-              <div className="p-6">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-2xl">
+              <div className="p-4 sm:p-6">
                 <h3 className="text-xl font-medium text-foreground mb-4">Members</h3>
                 <div className="space-y-3 max-h-96 overflow-y-auto">
                   {members.map((member) => (

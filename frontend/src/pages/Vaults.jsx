@@ -206,23 +206,23 @@ const Vaults = () => {
   };
   
   return (
-    <div className="max-w-6xl mx-auto mobile-content mobile-section">
+    <div className="max-w-6xl mx-auto px-2 sm:px-6 py-4 sm:py-8">
       <div className="space-y-6 lg:space-y-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-medium text-foreground flex items-center gap-2 sm:gap-3">
-              <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-medium text-foreground flex items-center gap-2 sm:gap-3">
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-8 text-primary" />
               Knowledge Vaults
             </h1>
-            <p className="text-muted-foreground text-sm sm:text-base">Organize and protect your specialized knowledge collections</p>
+            <p className="text-muted-foreground text-xs sm:text-sm md:text-base">Organize and protect your specialized knowledge collections</p>
           </div>
           
           <button
             onClick={() => setIsCreateModalOpen(true)}
-            className="nothing-btn-primary flex items-center gap-2 w-full sm:w-auto justify-center mobile-btn px-3 py-1.5 text-xs"
+            className="nothing-btn-primary flex items-center gap-2 w-full sm:w-auto justify-center px-3 py-1.5 text-xs sm:text-sm"
           >
-            <Plus className="w-3 h-3" />
+            <Plus className="w-4 h-4" />
             New Vault
           </button>
         </div>
@@ -249,32 +249,32 @@ const Vaults = () => {
         {invitations && invitations.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <Mail className="h-5 w-5 text-blue-500" />
+              <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
               <div>
-                <h2 className="text-lg font-medium text-foreground">Pending Invitations</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="text-base sm:text-lg font-medium text-foreground">Pending Invitations</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {invitations.length} invitation{invitations.length !== 1 ? 's' : ''} waiting for response
                 </p>
               </div>
             </div>
             
-            <div className="grid gap-4">
+            <div className="grid gap-3 sm:gap-4">
               {invitations.map((invitation) => (
                 <div
                   key={invitation.id}
-                  className="nothing-card p-6 hover:shadow-lg transition-all duration-300"
+                  className="nothing-card p-4 sm:p-6 hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/30">
-                        <Mail className="w-6 h-6 text-blue-500" />
+                  <div className="flex items-center justify-between flex-col sm:flex-row gap-2 sm:gap-0">
+                    <div className="flex items-center gap-3 sm:gap-4 flex-1">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/30">
+                        <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" />
                       </div>
                       
                       <div className="flex-1">
-                        <h4 className="font-medium text-foreground text-lg mb-1">
+                        <h4 className="font-medium text-foreground text-base sm:text-lg mb-1">
                           {invitation.vaultName}
                         </h4>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground">
                           <span>by {invitation.invitedBy}</span>
                           <span>•</span>
                           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium ${
@@ -289,10 +289,10 @@ const Vaults = () => {
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2">
                       <button
                         onClick={() => handleAcceptInvitation(invitation.id)}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium text-sm"
+                        className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium text-xs sm:text-sm"
                         title="Accept invitation"
                       >
                         <CheckCircle className="w-4 h-4" />
@@ -301,7 +301,7 @@ const Vaults = () => {
                       
                       <button
                         onClick={() => handleRejectInvitation(invitation.id)}
-                        className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium text-sm"
+                        className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium text-xs sm:text-sm"
                         title="Reject invitation"
                       >
                         <XCircle className="w-4 h-4" />
@@ -317,27 +317,27 @@ const Vaults = () => {
         
         {/* Vaults Grid */}
         {!loading && !error && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2 sm:gap-6">
             {displayVaults.map((vault) => (
               <div
                 key={vault.id}
-                className="nothing-card p-4 sm:p-6 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group cursor-pointer"
+                className="nothing-card p-3 sm:p-6 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group cursor-pointer"
                 onClick={() => handleVaultClick(vault)}
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3 sm:gap-4">
                     {vault.isPrivate ? (
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center border-2 border-primary/30 group-hover:scale-110 transition-transform duration-300">
-                        <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center border-2 border-primary/30 group-hover:scale-110 transition-transform duration-300">
+                        <Lock className="w-4 h-4 sm:w-6 sm:h-6 text-primary" />
                       </div>
                     ) : (
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500/20 to-green-600/30 rounded-2xl flex items-center justify-center border-2 border-green-500/30 group-hover:scale-110 transition-transform duration-300">
-                        <Unlock className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
+                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500/20 to-green-600/30 rounded-2xl flex items-center justify-center border-2 border-green-500/30 group-hover:scale-110 transition-transform duration-300">
+                        <Unlock className="w-4 h-4 sm:w-6 sm:h-6 text-green-500" />
                       </div>
                     )}
                     <div>
-                      <h3 className="font-medium text-lg text-foreground group-hover:text-primary transition-colors duration-300">{vault.name}</h3>
-                      <p className="text-sm text-muted-foreground">
+                      <h3 className="font-medium text-base sm:text-lg text-foreground group-hover:text-primary transition-colors duration-300">{vault.name}</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground">
                         Created {new Date(vault.createdAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -345,7 +345,7 @@ const Vaults = () => {
                   
                   <div className="relative">
                     <button 
-                      className="p-2 rounded-xl hover:bg-muted transition-all duration-300 group-hover:bg-primary/10"
+                      className="p-1 sm:p-2 rounded-xl hover:bg-muted transition-all duration-300 group-hover:bg-primary/10"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <MoreVertical className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
@@ -353,16 +353,16 @@ const Vaults = () => {
                   </div>
                 </div>
                 
-                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
+                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
                   {vault.description || "No description provided."}
                 </p>
                 
-                <div className="flex items-center gap-4 text-sm mb-6">
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm mb-4 sm:mb-6">
+                  <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 bg-muted/50 rounded-lg">
                     <Users className="w-4 h-4 text-muted-foreground" />
                     <span className="text-muted-foreground">{vault.members?.length || 0} member{vault.members?.length !== 1 ? 's' : ''}</span>
                   </div>
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-lg">
+                  <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 bg-muted/50 rounded-lg">
                     {getRoleIcon(vault.members?.find(m => m.userId === currentUser?.uid)?.role || 'view')}
                     <span className="capitalize text-muted-foreground">
                       {vault.members?.find(m => m.userId === currentUser?.uid)?.role || 'view'}
@@ -370,8 +370,8 @@ const Vaults = () => {
                   </div>
                 </div>
                 
-                <div className="pt-4 border-t border-border/30 flex items-center justify-between">
-                  <div className={`text-sm font-medium px-3 py-1 rounded-lg ${
+                <div className="pt-3 sm:pt-4 border-t border-border/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+                  <div className={`text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-lg ${
                     vault.isPrivate 
                       ? 'bg-primary/10 text-primary' 
                       : 'bg-green-500/10 text-green-500'
@@ -379,7 +379,7 @@ const Vaults = () => {
                     {vault.isPrivate ? "🔒 Private vault" : "🌐 Shared vault"}
                   </div>
                   
-                  <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex flex-row sm:flex-row flex-wrap gap-2 sm:gap-3 mt-2 sm:mt-0" onClick={(e) => e.stopPropagation()}>
                     {hasPermission(vault.id, currentUser?.uid, 'invite') && (
                       <button
                         onClick={() => openInviteModal(vault)}
@@ -389,7 +389,6 @@ const Vaults = () => {
                         <UserPlus className="w-4 h-4" />
                       </button>
                     )}
-                    
                     <button
                       onClick={() => openMembersModal(vault)}
                       className="p-2 rounded-xl hover:bg-green-500/10 hover:text-green-500 transition-all duration-300"
@@ -397,7 +396,12 @@ const Vaults = () => {
                     >
                       <Users className="w-4 h-4" />
                     </button>
-                    
+                    <button
+                      className="p-2 rounded-xl hover:bg-muted transition-all duration-300"
+                      title="Edit vault"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
                     {hasPermission(vault.id, currentUser?.uid, 'delete_vault') && (
                       <button
                         onClick={() => handleDeleteVault(vault.id)}
@@ -407,35 +411,28 @@ const Vaults = () => {
                         <Trash2 className="w-4 h-4" />
                       </button>
                     )}
-                    
-                    <button
-                      className="p-2 rounded-xl hover:bg-muted transition-all duration-300"
-                      title="Edit vault"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
                   </div>
                 </div>
               </div>
             ))}
             
             {displayVaults.length === 0 && (
-              <div className="col-span-full text-center py-12">
-                <div className="relative mb-6">
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-2xl flex items-center justify-center mx-auto border-2 border-primary/30 shadow-lg">
-                    <Lock className="w-8 h-8 text-primary" />
+              <div className="col-span-full text-center py-8 sm:py-12">
+                <div className="relative mb-4 sm:mb-6">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-2xl flex items-center justify-center mx-auto border-2 border-primary/30 shadow-lg">
+                    <Lock className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
                   </div>
-                  <div className="absolute inset-0 bg-primary/10 rounded-2xl blur-xl -z-10 mx-auto w-16 h-16"></div>
+                  <div className="absolute inset-0 bg-primary/10 rounded-2xl blur-xl -z-10 mx-auto w-12 h-12 sm:w-16 sm:h-16"></div>
                 </div>
-                <h3 className="text-lg font-medium text-foreground mb-2 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text">
+                <h3 className="text-base sm:text-lg font-medium text-foreground mb-1 sm:mb-2 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text">
                   No vaults yet
                 </h3>
-                <p className="text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed text-sm">
+                <p className="text-muted-foreground mb-4 sm:mb-6 max-w-md mx-auto leading-relaxed text-xs sm:text-sm">
                   Create your first knowledge vault to organize specialized content and collaborate with your team
                 </p>
                 <button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="nothing-btn-primary flex items-center gap-2 mx-auto text-sm px-4 py-2"
+                  className="nothing-btn-primary flex items-center gap-2 mx-auto text-xs sm:text-sm px-3 sm:px-4 py-2"
                 >
                   <Plus className="w-4 h-4" />
                   Create First Vault
@@ -448,9 +445,9 @@ const Vaults = () => {
       
       {/* Create Vault Modal */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-md">
-            <div className="p-6">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-card border border-border/50 rounded-xl shadow-lg w-[95vw] max-w-xs sm:max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="p-3 sm:p-6">
               <h3 className="text-xl font-medium text-foreground mb-4">Create New Vault</h3>
               
               <form onSubmit={handleCreateVault} className="space-y-4">
@@ -464,12 +461,11 @@ const Vaults = () => {
                     name="name"
                     value={newVaultData.name}
                     onChange={handleInputChange}
-                    className="nothing-input"
+                    className="nothing-input text-base px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/60"
                     placeholder="Enter vault name"
                     required
                   />
                 </div>
-                
                 <div>
                   <label htmlFor="description" className="block text-sm font-medium text-foreground mb-1">
                     Description
@@ -479,36 +475,34 @@ const Vaults = () => {
                     name="description"
                     value={newVaultData.description}
                     onChange={handleInputChange}
-                    className="nothing-input min-h-[100px]"
+                    className="nothing-input min-h-[100px] text-base px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/60"
                     placeholder="Enter a brief description"
                   />
                 </div>
-                
-                <div className="flex items-center">
+                <div className="flex items-center mt-2 mb-2">
                   <input
                     type="checkbox"
                     id="isPrivate"
                     name="isPrivate"
                     checked={newVaultData.isPrivate}
                     onChange={handleInputChange}
-                    className="mr-2 h-4 w-4"
+                    className="mr-2 h-5 w-5 accent-primary focus:ring-2 focus:ring-primary/60"
                   />
                   <label htmlFor="isPrivate" className="text-sm font-medium text-foreground">
                     Private Vault
                   </label>
                 </div>
-                
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-border/30">
+                <div className="flex items-center justify-end gap-2 pt-4 border-t border-border/30">
                   <button
                     type="button"
                     onClick={() => setIsCreateModalOpen(false)}
-                    className="nothing-btn-ghost"
+                    className="nothing-btn-ghost text-base px-4 py-2 rounded-lg"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="nothing-btn-primary"
+                    className="nothing-btn-primary text-base px-4 py-2 rounded-lg"
                   >
                     Create Vault
                   </button>
@@ -521,9 +515,9 @@ const Vaults = () => {
       
       {/* Invite User Modal */}
       {isInviteModalOpen && selectedVault && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-md">
-            <div className="p-6">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-md">
+            <div className="p-4 sm:p-6">
               <h3 className="text-xl font-medium text-foreground mb-4">
                 Invite User to "{selectedVault.name}"
               </h3>
@@ -585,9 +579,9 @@ const Vaults = () => {
 
       {/* Members Modal */}
       {isMembersModalOpen && selectedVault && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-2xl">
-            <div className="p-6">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-2xl">
+            <div className="p-4 sm:p-6">
               <h3 className="text-xl font-medium text-foreground mb-4">
                 Members of "{selectedVault.name}"
               </h3>
