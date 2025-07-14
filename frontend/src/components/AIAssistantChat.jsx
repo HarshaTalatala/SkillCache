@@ -23,9 +23,13 @@ const AIAssistantChat = () => {
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
 
-  useEffect(() => {
+useEffect(() => {
+  // Only auto-scroll on desktop (sm and up)
+  const isDesktop = window.innerWidth >= 640;
+  if (isDesktop) {
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
-  }, [messages]);
+  }
+}, [messages]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -50,7 +54,7 @@ const AIAssistantChat = () => {
   };
 
   return (
-    <div className="flex flex-col h-full sm:min-h-0 min-h-screen min-h-[100dvh] bg-background overflow-hidden overflow-x-hidden flex-1 min-w-0 px-4 sm:px-8">
+    <div className="flex flex-col h-full sm:min-h-0 min-h-screen bg-background overflow-hidden overflow-x-hidden flex-1 min-w-0 px-4 sm:px-8">
       <div className="flex flex-col h-full w-full flex-1">
         <div className="flex flex-col h-full w-full max-w-3xl mx-auto">
           {/* Header */}
@@ -115,7 +119,7 @@ const AIAssistantChat = () => {
             </button>
             <input
               type="text"
-              className="flex-1 px-3 py-2 rounded-full border border-border/30 bg-white dark:bg-zinc-800 text-base outline-none focus:ring-2 focus:ring-primary text-sm"
+              className="flex-1 px-3 py-2 rounded-full border border-border/30 bg-white dark:bg-zinc-800 text-sm outline-none focus:ring-2 focus:ring-primary"
               placeholder="Ask anything, or type /summarize..."
               value={input}
               onChange={(e) => setInput(e.target.value)}

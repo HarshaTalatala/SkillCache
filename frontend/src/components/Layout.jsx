@@ -91,7 +91,9 @@ const Layout = ({ children }) => {
         />
       )}
 
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`} style={{ width: sidebarCollapsed ? '64px' : '240px', minWidth: sidebarCollapsed ? '64px' : '240px', transition: 'width 0.2s' }}>
+      <aside
+        className={`sidebar fixed top-0 bottom-0 left-0 z-40 bg-card border-r border-border/30 transition-all duration-300 transform lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} ${sidebarCollapsed ? 'w-20' : 'w-64'} ${sidebarOpen ? 'open' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`}
+      >
         <div className="flex flex-col h-full">
           <div className="flex-shrink-0 mb-4">
             <div 
@@ -134,12 +136,11 @@ const Layout = ({ children }) => {
             <Link
               to="/settings"
               onClick={() => setSidebarOpen(false)}
-              className={`keep-nav-item sm:hidden flex items-center py-3 overflow-hidden ${sidebarCollapsed ? '' : 'gap-3 px-3 mb-2 rounded-lg'}`}
-              style={sidebarCollapsed ? { minHeight: '48px', padding: 0, margin: 0, borderRadius: 0, width: '100%' } : { minHeight: '48px' }}
+              className={`keep-nav-item sm:hidden flex items-center py-3 overflow-hidden ${sidebarCollapsed ? 'justify-center !px-0 !mb-0 !rounded-none' : 'gap-3 px-3 mb-2 rounded-lg'}`}
+              style={sidebarCollapsed ? { minHeight: '48px', width: '100%' } : { minHeight: '48px' }}
             >
               <div
-                className="w-10 h-10 bg-primary/20 border border-border/30 rounded-full flex items-center justify-center flex-shrink-0"
-                style={sidebarCollapsed ? { margin: '0 auto', display: 'block' } : {}}
+                className={`w-10 h-10 bg-primary/20 border border-border/30 rounded-full flex items-center justify-center flex-shrink-0 ${sidebarCollapsed ? 'mx-auto' : ''}`}
                 title={currentUser?.displayName || currentUser?.email || 'User'}
               >
                 <span
@@ -171,7 +172,7 @@ const Layout = ({ children }) => {
         </div>
       </aside>
 
-      <div className={`main-content flex flex-col ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ flex: 1, minWidth: 0 }}>
+      <div className={`main-content flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} ml-0 ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ flex: 1, minWidth: 0 }}>
         {location.pathname !== '/ai-assistant' ? (
           <header className="w-full bg-background/95 backdrop-blur-sm border-b-2 border-border/60 min-h-[80px]">
             <div className="flex items-center h-20 px-2 sm:px-6">
