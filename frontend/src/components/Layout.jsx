@@ -112,7 +112,10 @@ const Layout = ({ children }) => {
                 <Link
                   key={item.name}
                   to={item.href}
-                  onClick={() => setSidebarOpen(false)}
+                  onClick={() => {
+                    // Only close sidebar on mobile if not AI Assistant
+                    if (item.href !== '/ai-assistant') setSidebarOpen(false);
+                  }}
                   className={`keep-nav-item ${isActive(item.href) ? 'active' : ''}`}
                   title={sidebarCollapsed ? item.name : ''}
                 >
@@ -124,6 +127,7 @@ const Layout = ({ children }) => {
             {/* AI Assistant Button */}
             <Link
               to="/ai-assistant"
+              onClick={() => setSidebarOpen(false)}
               className={`keep-nav-item ${isActive('/ai-assistant') ? 'active' : ''}`}
               title="AI Assistant"
             >

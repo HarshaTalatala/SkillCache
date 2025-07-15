@@ -324,66 +324,71 @@ const Vaults = () => {
                 className="nothing-card p-3 sm:p-6 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 group cursor-pointer"
                 onClick={() => handleVaultClick(vault)}
               >
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3 sm:gap-4">
+                {/* Header: icon, name, menu */}
+                <div className="flex flex-row items-center justify-between mb-3 sm:mb-4 gap-2">
+                  <div className="flex items-center gap-2 sm:gap-4">
                     {vault.isPrivate ? (
-                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center border-2 border-primary/30 group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-7 h-7 sm:w-12 sm:h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center border-2 border-primary/30 group-hover:scale-110 transition-transform duration-300">
                         <Lock className="w-4 h-4 sm:w-6 sm:h-6 text-primary" />
                       </div>
                     ) : (
-                      <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500/20 to-green-600/30 rounded-2xl flex items-center justify-center border-2 border-green-500/30 group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-7 h-7 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500/20 to-green-600/30 rounded-2xl flex items-center justify-center border-2 border-green-500/30 group-hover:scale-110 transition-transform duration-300">
                         <Unlock className="w-4 h-4 sm:w-6 sm:h-6 text-green-500" />
                       </div>
                     )}
-                    <div>
-                      <h3 className="font-medium text-base sm:text-lg text-foreground group-hover:text-primary transition-colors duration-300">{vault.name}</h3>
-                      <p className="text-xs sm:text-sm text-muted-foreground">
+                    <div className="flex flex-col gap-0.5">
+                      <h3 className="font-medium text-base sm:text-lg text-foreground group-hover:text-primary transition-colors duration-300 leading-tight">{vault.name}</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground leading-tight">
                         Created {new Date(vault.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  
-                  <div className="relative">
-                    <button 
-                      className="p-1 sm:p-2 rounded-xl hover:bg-muted transition-all duration-300 group-hover:bg-primary/10"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <MoreVertical className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
-                    </button>
-                  </div>
+                  <button 
+                    className="p-1 sm:p-2 rounded-xl hover:bg-muted transition-all duration-300 group-hover:bg-primary/10"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreVertical className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
+                  </button>
                 </div>
-                
-                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
+
+                {/* Description */}
+                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-2 sm:mb-4">
                   {vault.description || "No description provided."}
                 </p>
-                
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm mb-4 sm:mb-6">
+
+                {/* Members and Role: horizontal on all, smaller icons on mobile */}
+                <div className="flex flex-row items-center gap-2 sm:gap-4 text-xs sm:text-sm mb-3 sm:mb-6">
                   <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 bg-muted/50 rounded-lg">
-                    <Users className="w-4 h-4 text-muted-foreground" />
+                    <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
                     <span className="text-muted-foreground">{vault.members?.length || 0} member{vault.members?.length !== 1 ? 's' : ''}</span>
                   </div>
                   <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 bg-muted/50 rounded-lg">
-                    {getRoleIcon(vault.members?.find(m => m.userId === currentUser?.uid)?.role || 'view')}
-                    <span className="capitalize text-muted-foreground">
-                      {vault.members?.find(m => m.userId === currentUser?.uid)?.role || 'view'}
+                    <span className="flex items-center gap-1">
+                      {/* Make role icon smaller on mobile */}
+                      <span className="inline-flex items-center">
+                        {React.cloneElement(getRoleIcon(vault.members?.find(m => m.userId === currentUser?.uid)?.role || 'view'), { className: 'w-3.5 h-3.5 sm:w-4 sm:h-4' })}
+                      </span>
+                      <span className="capitalize text-muted-foreground">
+                        {vault.members?.find(m => m.userId === currentUser?.uid)?.role || 'view'}
+                      </span>
                     </span>
                   </div>
                 </div>
-                
-                <div className="pt-3 sm:pt-4 border-t border-border/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+
+                {/* Footer: Vault type and actions, horizontal, icons smaller on mobile */}
+                <div className="pt-2 sm:pt-4 border-t border-border/30 flex flex-row items-center justify-between gap-2 sm:gap-0">
                   <div className={`text-xs sm:text-sm font-medium px-2 sm:px-3 py-1 rounded-lg ${
                     vault.isPrivate 
                       ? 'bg-primary/10 text-primary' 
                       : 'bg-green-500/10 text-green-500'
                   }`}>
-                    {vault.isPrivate ? "🔒 Private vault" : "🌐 Shared vault"}
+                    {vault.isPrivate ? <span className="inline-flex items-center gap-1"><Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline" />Private vault</span> : <span className="inline-flex items-center gap-1"><Unlock className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline" />Shared vault</span>}
                   </div>
-                  
-                  <div className="flex flex-row sm:flex-row flex-wrap gap-2 sm:gap-3 mt-2 sm:mt-0" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex flex-row flex-wrap gap-2 sm:gap-3" onClick={(e) => e.stopPropagation()}>
                     {hasPermission(vault.id, currentUser?.uid, 'invite') && (
                       <button
                         onClick={() => openInviteModal(vault)}
-                        className="p-2 rounded-xl hover:bg-blue-500/10 hover:text-blue-500 transition-all duration-300"
+                        className="p-1.5 sm:p-2 rounded-xl hover:bg-blue-500/10 hover:text-blue-500 transition-all duration-300"
                         title="Invite users"
                       >
                         <UserPlus className="w-4 h-4" />
@@ -391,13 +396,13 @@ const Vaults = () => {
                     )}
                     <button
                       onClick={() => openMembersModal(vault)}
-                      className="p-2 rounded-xl hover:bg-green-500/10 hover:text-green-500 transition-all duration-300"
+                      className="p-1.5 sm:p-2 rounded-xl hover:bg-green-500/10 hover:text-green-500 transition-all duration-300"
                       title="View members"
                     >
                       <Users className="w-4 h-4" />
                     </button>
                     <button
-                      className="p-2 rounded-xl hover:bg-muted transition-all duration-300"
+                      className="p-1.5 sm:p-2 rounded-xl hover:bg-muted transition-all duration-300"
                       title="Edit vault"
                     >
                       <Edit className="w-4 h-4" />
@@ -405,7 +410,7 @@ const Vaults = () => {
                     {hasPermission(vault.id, currentUser?.uid, 'delete_vault') && (
                       <button
                         onClick={() => handleDeleteVault(vault.id)}
-                        className="p-2 rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all duration-300"
+                        className="p-1.5 sm:p-2 rounded-xl hover:bg-destructive/10 hover:text-destructive transition-all duration-300"
                         title="Delete vault"
                       >
                         <Trash2 className="w-4 h-4" />
