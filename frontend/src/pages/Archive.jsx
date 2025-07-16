@@ -85,50 +85,73 @@ const Archive = () => {
         {/* Header */}
         <div className="space-y-2 sm:space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4">
-            <div className="flex flex-row items-center gap-2 sm:gap-3">
-              <ArchiveIcon className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Archive</h1>
-                <p className="text-xs sm:text-base text-muted-foreground">Manage your archived notes</p>
+            <div className="flex flex-row items-center justify-between gap-2 sm:gap-3 w-full">
+              <div className="flex flex-row items-center gap-2 sm:gap-3">
+                <ArchiveIcon className="w-8 h-8 sm:w-10 sm:h-10 text-primary" />
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Archive</h1>
+                  <p className="text-xs sm:text-base text-muted-foreground whitespace-nowrap">Manage your archived notes</p>
+                </div>
               </div>
+              {/* Action buttons when notes are selected - right end on mobile, hidden on desktop */}
+              {selectedNotes.length > 0 && (
+                <div className="flex flex-row gap-2 sm:hidden">
+                  <button
+                    onClick={handleRestore}
+                    className="flex items-center gap-2 px-3 py-2 text-xs bg-green-500/10 border border-green-500/30 text-green-500 rounded-lg hover:bg-green-500/20 transition-colors"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    <span className="hidden sm:inline">Restore ({selectedNotes.length})</span>
+                  </button>
+                  <button
+                    onClick={handlePermanentDelete}
+                    className="flex items-center gap-2 px-3 py-2 text-xs bg-red-500/10 border border-red-500/30 text-red-500 rounded-lg hover:bg-red-500/20 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span className="hidden sm:inline">Delete</span>
+                  </button>
+                </div>
+              )}
             </div>
             {/* Archive Stats & Actions - horizontally scrollable on mobile */}
             <div className="flex flex-row flex-wrap items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted/30 scrollbar-track-transparent py-2 sm:py-0 w-full">
-              {/* Action buttons when notes are selected - before stats */}
+              {/* Action buttons when notes are selected - right side on desktop only */}
               {selectedNotes.length > 0 && (
-                <>
+                <div className="hidden sm:flex flex-row gap-2">
                   <button
                     onClick={handleRestore}
                     className="flex items-center gap-2 px-3 py-2 text-xs sm:text-sm bg-green-500/10 border border-green-500/30 text-green-500 rounded-lg hover:bg-green-500/20 transition-colors"
                   >
                     <RotateCcw className="w-4 h-4" />
-                    Restore ({selectedNotes.length})
+                    <span className="hidden sm:inline">Restore ({selectedNotes.length})</span>
                   </button>
                   <button
                     onClick={handlePermanentDelete}
                     className="flex items-center gap-2 px-3 py-2 text-xs sm:text-sm bg-red-500/10 border border-red-500/30 text-red-500 rounded-lg hover:bg-red-500/20 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
-                    Delete
+                    <span className="hidden sm:inline">Delete</span>
                   </button>
-                </>
+                </div>
               )}
-              
-              <div className="p-2 sm:p-3 bg-card border border-border/50 rounded-lg w-[48%] min-w-[7rem] sm:w-36 sm:min-w-[9rem]">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <ArchiveIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Total Archived</p>
-                    <p className="text-base sm:text-lg font-bold text-foreground">{archivedNotes.length}</p>
+              {/* Stats - right aligned on desktop */}
+              <div className="flex flex-row gap-2 sm:gap-3 w-full sm:w-auto sm:ml-auto">
+                <div className="p-2 sm:p-3 bg-card border border-border/50 rounded-lg w-[48%] min-w-[7rem] sm:w-36 sm:min-w-[9rem]">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <ArchiveIcon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Total Archived</p>
+                      <p className="text-base sm:text-lg font-bold text-foreground">{archivedNotes.length}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="p-2 sm:p-3 bg-card border border-border/50 rounded-lg w-[48%] min-w-[7rem] sm:w-36 sm:min-w-[9rem]">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <Star className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400" />
-                  <div>
-                    <p className="text-xs text-muted-foreground">Selected</p>
-                    <p className="text-base sm:text-lg font-bold text-foreground">{selectedNotes.length}</p>
+                <div className="p-2 sm:p-3 bg-card border border-border/50 rounded-lg w-[48%] min-w-[7rem] sm:w-36 sm:min-w-[9rem]">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <Star className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Selected</p>
+                      <p className="text-base sm:text-lg font-bold text-foreground">{selectedNotes.length}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -148,81 +171,52 @@ const Archive = () => {
                 return (
                   <div
                     key={note.id}
-                    className={`p-4 sm:p-6 bg-card border rounded-lg transition-all ${
-                      isSelected 
-                        ? 'border-primary/50 bg-primary/5' 
-                        : 'border-border/50 hover:border-border/80'
-                    }`}
+                    className={`note-card bg-card border border-border/40 shadow-lg hover:shadow-xl transition-shadow duration-200 rounded-2xl p-3 sm:p-5 flex flex-col gap-2 sm:gap-3 cursor-pointer ${isSelected ? 'border-primary/50 bg-primary/5' : 'hover:border-border/80'}`}
+                    onClick={e => {
+                      // Prevent preview if checkbox or edit button is clicked
+                      if (e.target.closest('.note-checkbox') || e.target.closest('.note-edit-btn')) return;
+                      handlePreviewNote(note);
+                    }}
                   >
-                    <div className="space-y-4">
-                      {/* Note Header */}
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex flex-col min-w-0 flex-1 gap-0.5">
+                        <div className="flex items-center gap-2 mb-1">
                           <input
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => handleNoteSelect(note.id)}
-                            className="w-5 h-5 text-primary bg-background border-border rounded focus:ring-primary/20"
+                            className="note-checkbox w-5 h-5 text-primary bg-background border-border rounded focus:ring-primary/20 mr-1"
+                            onClick={e => e.stopPropagation()}
                           />
-                          <TypeIcon className="h-5 w-5 text-primary" />
-                          <span className={`text-xs sm:text-sm font-medium ${getCategoryColor(note.category)}`}>
-                            {note.category}
-                          </span>
+                          <TypeIcon className="h-5 w-5 sm:h-6 sm:w-6 text-primary flex-shrink-0" />
+                          <span className={`text-xs sm:text-sm font-medium ${getCategoryColor(note.category)}`}>{note.category}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <button 
-                            className="p-1 sm:p-2 hover:bg-muted rounded" 
-                            onClick={() => handlePreviewNote(note)} 
-                            title="Preview Note"
-                          >
-                            <Eye className="h-4 w-4 text-muted-foreground" />
-                          </button>
-                          <button 
-                            className="p-1 sm:p-2 hover:bg-muted rounded" 
-                            onClick={() => handleEditNote(note)} 
-                            title="Edit Note"
-                          >
-                            <Edit3 className="h-4 w-4 text-muted-foreground" />
-                          </button>
-                          <span className="text-xs sm:text-sm text-muted-foreground ml-2">
-                            {note.archivedAt}
-                          </span>
-                        </div>
+                        <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors text-base sm:text-lg line-clamp-2 truncate min-w-0 mt-1">{note.title}</h3>
                       </div>
-                      
-                      {/* Note Content */}
-                      <div>
-                        <h3 className="font-semibold text-foreground mb-2 sm:mb-3 line-clamp-2 text-base">
-                          {note.title}
-                        </h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3">
-                          {note.summary}
-                        </p>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <button
+                          className="note-edit-btn p-1 sm:p-1.5 hover:bg-muted rounded transition-colors flex-shrink-0"
+                          onClick={e => {
+                            e.stopPropagation();
+                            handleEditNote(note);
+                          }}
+                          title="Edit Note"
+                        >
+                          <Edit3 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                        </button>
+                        <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">{note.archivedAt}</span>
                       </div>
-                      
-                      {/* Note Tags */}
-                      <div className="flex flex-wrap gap-1 sm:gap-2">
-                        {note.tags.slice(0, 3).map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-muted text-muted-foreground rounded"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        {note.tags.length > 3 && (
-                          <span className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-muted text-muted-foreground rounded">
-                            +{note.tags.length - 3}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Archive Info */}
-                      <div className="pt-2 sm:pt-3 border-t border-border/30">
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          Created: {note.createdAt} • Archived: {note.archivedAt}
-                        </p>
-                      </div>
+                    </div>
+                    <p className="text-muted-foreground text-xs sm:text-base mb-1 whitespace-pre-line line-clamp-3">{note.summary}</p>
+                    <div className="flex flex-wrap gap-1 mt-auto">
+                      {note.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="tag-pill text-xs px-2 py-0.5"
+                        >
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 );
@@ -248,27 +242,28 @@ const Archive = () => {
 
         {/* Preview Note Modal */}
         {noteToPreview && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-0 sm:p-4">
-            <div className="bg-white dark:bg-card shadow-2xl rounded-2xl w-full max-w-md sm:max-w-2xl max-h-[95vh] overflow-y-auto relative">
-              {/* Floating Close Button */}
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-white dark:bg-card shadow-2xl rounded-2xl w-full max-w-full sm:max-w-2xl max-h-[95vh] flex flex-col relative overflow-hidden">
+              {/* Sticky Close Button for mobile, floating for desktop */}
               <button
                 onClick={() => setNoteToPreview(null)}
-                className="absolute top-3 right-3 z-10 p-2 bg-white/80 dark:bg-card/80 rounded-full shadow hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
+                className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 p-3 sm:p-3.5 bg-white/80 dark:bg-card/80 rounded-full shadow hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
                 aria-label="Close preview"
+                style={{ minWidth: 40, minHeight: 40 }}
               >
-                <span className="text-2xl text-muted-foreground">&times;</span>
+                <span className="text-2xl sm:text-3xl text-muted-foreground">&times;</span>
               </button>
-              <div className="p-5 sm:p-8 flex flex-col gap-6">
+              <div className="p-4 sm:p-8 flex-1 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
                 {/* Title & Badges */}
                 <div className="flex flex-col gap-2">
-                  <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">{noteToPreview.title}</h2>
+                  <h2 className="text-xl sm:text-3xl font-extrabold text-foreground leading-tight break-words">{noteToPreview.title}</h2>
                   <div className="flex flex-wrap gap-2 mt-1">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getCategoryColor(noteToPreview.category)} bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800`}>{noteToPreview.category}</span>
                     <span className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 capitalize">{noteToPreview.type}</span>
                   </div>
                 </div>
                 {/* Summary */}
-                <div className="text-base sm:text-lg text-muted-foreground leading-relaxed whitespace-pre-line">
+                <div className="text-sm sm:text-lg text-muted-foreground leading-relaxed whitespace-pre-line break-words">
                   {noteToPreview.summary}
                 </div>
                 {/* Tags */}

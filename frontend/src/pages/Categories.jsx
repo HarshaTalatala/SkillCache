@@ -207,6 +207,18 @@ const Categories = () => {
     return colors[color] || colors.blue;
   };
 
+  const getBorderColorClass = (color) => {
+    const colors = {
+      blue: 'border-blue-400',
+      purple: 'border-purple-400',
+      green: 'border-green-400',
+      yellow: 'border-yellow-400',
+      red: 'border-red-400',
+      indigo: 'border-indigo-400'
+    };
+    return colors[color] || 'border-blue-400';
+  };
+
   // If a category is selected, show its notes
   if (selectedCategory) {
     const CategoryIcon = selectedCategory.icon;
@@ -221,21 +233,18 @@ const Categories = () => {
       <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
         <div className="space-y-3 sm:space-y-4">
           {/* Header with Back Button */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4">
+          <div className="flex flex-row items-center gap-2 sm:gap-4">
             <button
               onClick={handleBackToCategories}
-              className="p-2 rounded-lg border border-border/50 hover:bg-muted hover:border-border/80 transition-colors mb-2 sm:mb-0"
+              className={`p-2 rounded-lg border-2 bg-background hover:bg-muted transition-colors ${getBorderColorClass(selectedCategory.color)}`}
               title="Back to categories"
             >
               <ArrowLeft className={`w-5 h-5 sm:w-6 sm:h-6 ${getIconColorClass(selectedCategory.color)}`} />
             </button>
-            
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-              <CategoryIcon className={`w-7 h-7 sm:w-8 sm:h-8 ${getIconColorClass(selectedCategory.color)}`} />
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{selectedCategory.name}</h1>
-                <p className="text-sm sm:text-base text-muted-foreground">{selectedCategory.description}</p>
-              </div>
+            <CategoryIcon className={`w-7 h-7 sm:w-8 sm:h-8 ${getIconColorClass(selectedCategory.color)}`} />
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{selectedCategory.name}</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">{selectedCategory.description}</p>
             </div>
           </div>
 
@@ -252,42 +261,37 @@ const Categories = () => {
                 {filteredNotes.map((note) => (
                   <div
                     key={note.id}
-                    className="p-4 sm:p-6 bg-card border border-border/50 rounded-lg hover:border-border/80 transition-all"
+                    className="note-card bg-card border border-border/40 shadow-lg hover:shadow-xl transition-shadow duration-200 rounded-2xl p-4 sm:p-6 flex flex-col gap-2 sm:gap-3 cursor-pointer"
+                    onClick={e => {
+                      // Prevent preview if delete button is clicked
+                      if (e.target.closest('.note-delete-btn')) return;
+                      handlePreviewNote(note);
+                    }}
                   >
-                    <div className="space-y-3 sm:space-y-4">
-                      <div className="flex items-start justify-between">
-                        <h3 className="font-semibold text-foreground line-clamp-2 text-base">
-                          {note.title}
-                        </h3>
-                        <div className="flex items-center gap-1 sm:gap-2">
-                          <button 
-                            className="p-1 sm:p-2 hover:bg-muted rounded" 
-                            onClick={() => handlePreviewNote(note)} 
-                            title="Preview Note"
-                          >
-                            <Eye className="h-4 w-4 text-muted-foreground" />
-                          </button>
-                          <button 
-                            className="p-1 sm:p-2 hover:bg-muted rounded" 
-                            onClick={() => setNoteToDelete(note)} 
-                            title="Delete Note"
-                          >
-                            <Trash2 className="h-4 w-4 text-muted-foreground" />
-                          </button>
-                          <span className={`text-xs sm:text-sm font-medium ${getPriorityColor(note.priority)} ml-1`}>
-                            {note.priority}
-                          </span>
-                        </div>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex flex-col min-w-0 flex-1 gap-0.5">
+                        <h3 className="font-semibold text-foreground text-base sm:text-lg line-clamp-2 truncate min-w-0 mb-1">{note.title}</h3>
                       </div>
-                      
-                      <p className="text-xs sm:text-sm text-muted-foreground line-clamp-3">
-                        {note.summary}
-                      </p>
-                      
-                      <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <button
+                          className="note-delete-btn p-1 sm:p-1.5 hover:bg-muted rounded transition-colors flex-shrink-0"
+                          onClick={e => {
+                            e.stopPropagation();
+                            setNoteToDelete(note);
+                          }}
+                          title="Delete Note"
+                        >
+                          <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                        </button>
+                      </div>
+                    </div>
+                    <p className="text-muted-foreground text-xs sm:text-base mb-1 whitespace-pre-line line-clamp-3">{note.summary}</p>
+                    <div className="flex items-center justify-between gap-2 mt-auto text-xs sm:text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
                         <span>{new Date(note.createdAt).toLocaleDateString()}</span>
                       </div>
+                      <span className={`font-medium ${getPriorityColor(note.priority)}`}>{note.priority}</span>
                     </div>
                   </div>
                 ))}
@@ -311,36 +315,37 @@ const Categories = () => {
 
         {/* Preview Note Modal */}
         {noteToPreview && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-            <div className="bg-card border border-border/50 rounded-xl shadow-lg w-full max-w-xs sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-              <div className="p-4 sm:p-6">
-                <div className="flex items-center justify-between mb-3 sm:mb-4">
-                  <h3 className="text-lg sm:text-xl font-medium text-foreground">Preview Note</h3>
-                  <button 
-                    onClick={() => setNoteToPreview(null)} 
-                    className="p-1 hover:bg-muted rounded"
-                  >
-                    <span className="sr-only">Close</span>
-                    <span className="text-xl sm:text-2xl">&times;</span>
-                  </button>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-white dark:bg-card shadow-2xl rounded-2xl w-full max-w-full sm:max-w-2xl max-h-[95vh] flex flex-col relative overflow-hidden">
+              {/* Sticky Close Button for mobile, floating for desktop */}
+              <button
+                onClick={() => setNoteToPreview(null)}
+                className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 p-3 sm:p-3.5 bg-white/80 dark:bg-card/80 rounded-full shadow hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label="Close preview"
+                style={{ minWidth: 40, minHeight: 40 }}
+              >
+                <span className="text-2xl sm:text-3xl text-muted-foreground">&times;</span>
+              </button>
+              <div className="p-4 sm:p-8 flex-1 flex flex-col gap-4 sm:gap-6 overflow-y-auto">
+                {/* Title & Badges */}
+                <div className="flex flex-col gap-2">
+                  <h2 className="text-xl sm:text-3xl font-extrabold text-foreground leading-tight break-words">{noteToPreview.title}</h2>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getPriorityColor(noteToPreview.priority)} bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800`}>{noteToPreview.priority}</span>
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 capitalize">{selectedCategory.name}</span>
+                  </div>
                 </div>
-                <div className="space-y-3 sm:space-y-4">
-                  <div>
-                    <h4 className="font-semibold text-foreground text-base sm:text-lg mb-1 sm:mb-2">{noteToPreview.title}</h4>
-                    <p className="text-xs sm:text-base text-muted-foreground">{noteToPreview.summary}</p>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
-                    <Calendar className="w-4 h-4" />
-                    <span>Created: {new Date(noteToPreview.createdAt).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <span className="text-xs sm:text-sm font-medium text-muted-foreground">Priority:</span>
-                    <span className={`text-xs sm:text-sm font-medium ${getPriorityColor(noteToPreview.priority)}`}>{noteToPreview.priority}</span>
-                  </div>
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <span className="text-xs sm:text-sm font-medium text-muted-foreground">Category:</span>
-                    <span className="text-xs sm:text-sm text-foreground">{selectedCategory.name}</span>
-                  </div>
+                {/* Summary */}
+                <div className="text-sm sm:text-lg text-muted-foreground leading-relaxed whitespace-pre-line break-words">
+                  {noteToPreview.summary}
+                </div>
+                {/* Divider */}
+                <div className="border-t border-border/20" />
+                {/* Metadata */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs sm:text-sm text-muted-foreground">
+                  <div className="flex flex-col"><span className="font-semibold">Created</span><span>{new Date(noteToPreview.createdAt).toLocaleDateString()}</span></div>
+                  <div className="flex flex-col"><span className="font-semibold">Priority</span><span className={`font-semibold ${getPriorityColor(noteToPreview.priority)}`}>{noteToPreview.priority}</span></div>
+                  <div className="flex flex-col"><span className="font-semibold">Category</span><span>{selectedCategory.name}</span></div>
                 </div>
               </div>
             </div>
