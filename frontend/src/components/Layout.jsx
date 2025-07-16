@@ -187,7 +187,7 @@ const Layout = ({ children }) => {
               </div>
               <div className="flex-1 flex items-center px-2 sm:px-4">
                 {/* Mobile Search Input */}
-                <div className="relative flex items-center w-full sm:hidden gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] border-2 border-primary/40 shadow-sm ml-4 w-full min-w-[250px]">
+                <div className="relative flex items-center w-full sm:hidden gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] border-2 border-primary/40 shadow-sm ml-4">
                   <div className="relative flex items-center w-full">
                     <Search size={24} className="z-10 mr-4" />
                     <input
@@ -214,7 +214,7 @@ const Layout = ({ children }) => {
                   </div>
                 </div>
                 {/* Desktop Search Input */}
-                <div className="hidden sm:flex items-center w-full gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] transition-all duration-300 border-2 border-primary/40 shadow-sm max-w-xl ml-4">
+                <div className="hidden sm:flex items-center w-full gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] transition-all duration-300 border-2 border-primary/40 shadow-sm max-w-md ml-4">
                   <div className="relative flex items-center w-full">
                     <Search size={24} className="z-10 mr-4" />
                     <input
@@ -277,7 +277,7 @@ const Layout = ({ children }) => {
               </div>
               <div className="flex-1 flex items-center px-2 sm:px-4">
                 {/* Mobile Search Input */}
-                <div className="relative flex items-center w-full lg:hidden gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] border-2 border-primary/40 shadow-sm ml-4 w-full min-w-[250px]">
+                <div className="relative flex items-center w-full lg:hidden gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] border-2 border-primary/40 shadow-sm ml-4">
                   <div className="relative flex items-center w-full">
                     <Search size={24} className="z-10 mr-4" />
                     <input
@@ -304,7 +304,7 @@ const Layout = ({ children }) => {
                   </div>
                 </div>
                 {/* Desktop Search Input */}
-                <div className="hidden lg:flex items-center w-full gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] transition-all duration-300 border-2 border-primary/40 shadow-sm max-w-xl ml-4">
+                <div className="hidden lg:flex items-center w-full gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] transition-all duration-300 border-2 border-primary/40 shadow-sm max-w-md ml-4">
                   <div className="relative flex items-center w-full">
                     <Search size={24} className="z-10 mr-4" />
                     <input
