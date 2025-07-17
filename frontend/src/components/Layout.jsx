@@ -176,10 +176,11 @@ const Layout = ({ children }) => {
         </div>
       </aside>
 
-      <div className={`main-content flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} ml-0 ${sidebarCollapsed ? 'sidebar-collapsed' : ''} px-2 sm:px-4 lg:px-8`} style={{ flex: 1, minWidth: 0 }}>
-        {location.pathname !== '/ai-assistant' ? (
+      <div className={`main-content flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} ml-0 ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}
+        style={{ flex: 1, minWidth: 0 }}>
+        {location.pathname !== '/ai-assistant' && (
           <header className="w-full bg-background/95 backdrop-blur-sm border-b-2 border-border/60 min-h-[80px] overflow-x-hidden">
-            <div className="flex items-center h-20 px-2 sm:px-6">
+            <div className="flex items-center h-20 px-2 sm:px-4">
               <div className="flex-shrink-0">
                 <button onClick={() => setSidebarOpen(true)} className="p-2 sm:hidden" aria-label="Open navigation menu">
                   <Menu className="h-6 w-6 text-primary transition-opacity hover:opacity-80" />
@@ -267,98 +268,7 @@ const Layout = ({ children }) => {
               </div>
             </div>
           </header>
-        ) : (
-          <header className="w-full bg-background/95 backdrop-blur-sm border-b-2 border-border/60 min-h-[80px] lg:hidden">
-            <div className="flex items-center h-20 px-2 sm:px-6">
-              <div className="flex-shrink-0">
-                <button onClick={() => setSidebarOpen(true)} className="p-2 lg:hidden" aria-label="Open navigation menu">
-                  <Menu className="h-6 w-6 text-primary transition-opacity hover:opacity-80" />
-                </button>
-              </div>
-              <div className="flex-1 flex items-center px-2 sm:px-4">
-                {/* Mobile Search Input */}
-                <div className="relative flex items-center w-full lg:hidden gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] border-2 border-primary/40 shadow-sm ml-4">
-                  <div className="relative flex items-center w-full">
-                    <Search size={24} className="z-10 mr-4" />
-                    <input
-                      type="text"
-                      className="bg-transparent outline-none border-0 flex-1 text-base truncate transition-opacity duration-300 z-10 focus:border-0 focus:outline-none focus:ring-0"
-                      style={{ opacity: textOpacity }}
-                      placeholder={
-                        placeholderText === 'SkillCache'
-                          ? ''
-                          : placeholderText
-                      }
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      aria-label="Search notes"
-                    />
-                    {placeholderText === 'SkillCache' && !searchQuery && (
-                      <span
-                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold select-none pointer-events-none flex items-center justify-center w-full z-20"
-                        style={{ opacity: textOpacity }}
-                      >
-                        <span className="text-white">Skill</span><span className="text-primary" style={{ color: '#ef4444' }}>Cache</span>
-                      </span>
-                    )}
-                  </div>
-                </div>
-                {/* Desktop Search Input */}
-                <div className="hidden lg:flex items-center w-full gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] transition-all duration-300 border-2 border-primary/40 shadow-sm max-w-md ml-4">
-                  <div className="relative flex items-center w-full">
-                    <Search size={24} className="z-10 mr-4" />
-                    <input
-                      type="text"
-                      className="bg-transparent outline-none border-0 flex-1 text-base truncate transition-opacity duration-300 z-10 focus:border-0 focus:outline-none focus:ring-0"
-                      style={{ opacity: textOpacity }}
-                      placeholder={
-                        placeholderText === 'SkillCache'
-                          ? ''
-                          : placeholderText
-                      }
-                      value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      aria-label="Search notes"
-                    />
-                    {placeholderText === 'SkillCache' && !searchQuery && (
-                      <span
-                        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold select-none pointer-events-none flex items-center justify-center w-full z-20"
-                        style={{ opacity: textOpacity }}
-                      >
-                        <span className="text-white">Skill</span><span className="text-primary" style={{ color: '#ef4444' }}>Cache</span>
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 flex-shrink-0 sm:gap-2 min-h-[56px] pr-2 sm:pr-4">
-                <button
-                  onClick={toggleTheme}
-                  className="w-9 h-9 flex items-center justify-center hover:bg-muted rounded-full border-2 border-primary/40"
-                  title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-                >
-                  {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                </button>
-                {/* User avatar and info: only show on desktop (sm+) */}
-                <div className="hidden lg:flex items-center gap-3 sm:gap-3 min-h-[56px]">
-                  <div 
-                    className="w-10 h-10 bg-primary/20 border border-border/30 rounded-full flex items-center justify-center flex-shrink-0"
-                    title={currentUser?.displayName || currentUser?.email || 'User'}
-                  >
-                    <span className="text-base font-medium text-primary">
-                      {currentUser?.displayName?.[0] || currentUser?.email?.[0] || 'U'}
-                    </span>
-                  </div>
-                  <div className="hidden lg:flex flex-col items-start">
-                    <p className="text-sm font-medium text-foreground">{currentUser?.displayName || 'User'}</p>
-                    <p className="text-xs text-muted-foreground">{currentUser?.email}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </header>
         )}
-
         <main
           className={`main-content-area ${location.pathname === '/ai-assistant' ? 'ai-assistant-active' : ''}`}
           style={
@@ -371,10 +281,14 @@ const Layout = ({ children }) => {
                   WebkitOverflowScrolling: 'touch',
                   padding: 0,
                 }
-              : {}
+              : { padding: 0 }
           }
         >
-          {children}
+          {React.Children.map(children, child =>
+            React.isValidElement(child)
+              ? React.cloneElement(child, { sidebarCollapsed })
+              : child
+          )}
         </main>
       </div>
     </div>

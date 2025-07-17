@@ -16,7 +16,7 @@ function formatDate(dateString) {
   });
 }
 
-const Dashboard = () => {
+const Dashboard = ({ sidebarCollapsed }) => {
   const { searchQuery } = useSearch();
   const { notes, fetchNotes, deleteNote, loading, error } = useNote();
   const [noteToDelete, setNoteToDelete] = useState(null);
@@ -64,7 +64,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="space-y-2 sm:space-y-3 px-2 sm:px-0 min-h-[60vh] flex flex-col overflow-x-hidden">
+    <div className={`pt-2 space-y-2 sm:space-y-3 ${sidebarCollapsed ? 'sm:pl-2 lg:pl-4' : 'sm:pl-6 lg:pl-10'} sm:pr-2 lg:pr-4 min-h-[60vh] flex flex-col overflow-x-hidden`}>
       {loading && notes.length === 0 ? (
         <div className="flex flex-col items-center justify-center w-full p-4 min-h-[40vh]">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
@@ -78,18 +78,18 @@ const Dashboard = () => {
         </div>
       ) : (
         filteredNotes.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 w-full mt-2">
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-3 w-full mt-2">
             {filteredNotes.map((note, idx) => {
               const CategoryIcon = categoryIcons[note.category] || BookOpen;
               const priority = note.priority || 'medium';
               let stars = 1;
-              let starColor = 'text-green-500';
-              if (priority === 'medium') { stars = 2; starColor = 'text-orange-400'; }
-              if (priority === 'high') { stars = 3; starColor = 'text-yellow-400'; }
+              let starStroke = '#22c55e'; // green-500
+              if (priority === 'medium') { stars = 2; starStroke = '#facc15'; } // yellow-400
+              if (priority === 'high') { stars = 3; starStroke = '#ef4444'; } // red-500
               return (
                 <div
                   key={note.id || note._id || note.createdAt || idx}
-                  className="note-card h-full bg-card border border-border/40 shadow-lg hover:shadow-xl transition-shadow duration-200 rounded-2xl p-4 flex flex-col gap-2 cursor-pointer relative"
+                  className="note-card bg-card border border-border/40 shadow-lg hover:shadow-xl transition-shadow duration-200 rounded-2xl p-4 flex flex-col gap-2 cursor-pointer relative mb-3 break-inside-avoid"
                   onClick={e => {
                     // Prevent preview if delete button is clicked
                     if (e.target.closest('.note-delete-btn')) return;
@@ -99,7 +99,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <CategoryIcon className="h-5 w-5 sm:h-6 sm:w-6 flex-shrink-0 text-primary" />
-                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors text-base sm:text-lg line-clamp-2 truncate min-w-0">
+                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors text-base sm:text-lg min-w-0">
                         {note.title}
                       </h3>
                     </div>
@@ -116,7 +116,7 @@ const Dashboard = () => {
                       </button>
                     </div>
                   </div>
-                  <p className="text-muted-foreground text-xs sm:text-base mb-1 whitespace-pre-line line-clamp-3">
+                  <p className="text-muted-foreground text-xs sm:text-base mb-1 whitespace-pre-line">
                     {note.summary || note.content || ''}
                   </p>
                   <div className="flex flex-wrap gap-1 mt-auto">
@@ -129,10 +129,10 @@ const Dashboard = () => {
                       </span>
                     ))}
                   </div>
-                  {/* Priority hollow stars at bottom left */}
-                  <span className={`absolute bottom-2 left-4 flex items-center gap-0.5 ${starColor}`} title={`Priority: ${priority.charAt(0).toUpperCase() + priority.slice(1)}`}> 
+                  {/* Priority colored hollow stars at bottom left */}
+                  <span className="absolute bottom-2 left-4 flex items-center gap-0.5" title={`Priority: ${priority.charAt(0).toUpperCase() + priority.slice(1)}`}> 
                     {Array.from({ length: stars }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4" fill="none" />
+                      <Star key={i} className="w-4 h-4" fill="none" stroke={starStroke} />
                     ))}
                   </span>
                   {/* Date at bottom right */}
@@ -169,14 +169,25 @@ const Dashboard = () => {
 
       {/* Preview Note Modal */}
       {noteToPreview && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-1 sm:p-4">
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-1 sm:p-4"
+          onClick={() => setNoteToPreview(null)}
+        >
           <div
             className="bg-card border border-border/50 rounded-2xl shadow-2xl w-full max-w-[98vw] sm:max-w-2xl max-h-[95vh] overflow-y-auto flex flex-col"
             style={{ boxShadow: '0 8px 32px 0 rgba(0,0,0,0.25)' }}
+            onClick={e => e.stopPropagation()}
           >
             <div className="p-4 sm:p-8 flex-1 flex flex-col">
+              {/* Title and Category at the very top, close button top-right */}
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg sm:text-xl font-medium text-foreground">Preview Note</h3>
+                <div className="flex items-center gap-3">
+                  {(() => {
+                    const Icon = categoryIcons[noteToPreview.category] || BookOpen;
+                    return <Icon className="w-6 h-6 text-primary flex-shrink-0" />;
+                  })()}
+                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-0 line-clamp-2">{noteToPreview.title}</h2>
+                </div>
                 <button
                   onClick={() => setNoteToPreview(null)}
                   className="p-2 sm:p-2.5 hover:bg-muted rounded focus:outline-none focus:ring-2 focus:ring-primary"
@@ -186,35 +197,34 @@ const Dashboard = () => {
                   <span className="text-2xl">&times;</span>
                 </button>
               </div>
-              <div className="space-y-3 flex-1">
-                <div>
-                  <h4 className="font-semibold text-foreground text-base sm:text-lg mb-1">{noteToPreview.title}</h4>
-                  <p className="text-xs sm:text-base text-muted-foreground whitespace-pre-line">{noteToPreview.summary || noteToPreview.content || ''}</p>
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {(noteToPreview.tags || []).map((tag) => (
+              {/* Content */}
+              <div className="mb-4">
+                <p className="text-base sm:text-lg text-muted-foreground whitespace-pre-line">{noteToPreview.summary || noteToPreview.content || ''}</p>
+              </div>
+              {/* Tags */}
+              {noteToPreview.tags && noteToPreview.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {noteToPreview.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 text-xs sm:text-sm bg-muted text-muted-foreground rounded"
+                      className="px-3 py-1 text-xs sm:text-sm bg-muted text-muted-foreground rounded-full border border-border"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
-                <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground mt-2">
-                  <div>
-                    <p>Created: {noteToPreview.createdAt}</p>
-                    <p>Type: {noteToPreview.type}</p>
-                  </div>
-                  <Link
-                    to={`/add-note/${noteToPreview.id}`}
-                    className="btn-primary p-2 sm:p-2.5 flex items-center justify-center ml-2 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-                    title="Edit Note"
-                    style={{ minWidth: 36, minHeight: 36 }}
-                  >
-                    <Pencil className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </Link>
-                </div>
+              )}
+              {/* Footer: Date and Edit */}
+              <div className="flex items-center justify-between pt-4 mt-auto border-t border-border/30">
+                <span className="text-xs sm:text-sm text-muted-foreground">Created: {formatDate(noteToPreview.createdAt)}</span>
+                <Link
+                  to={`/add-note/${noteToPreview.id}`}
+                  className="btn-primary p-2 sm:p-2.5 flex items-center justify-center ml-2 rounded focus:outline-none focus:ring-2 focus:ring-primary"
+                  title="Edit Note"
+                  style={{ minWidth: 36, minHeight: 36 }}
+                >
+                  <Pencil className="h-4 w-4 sm:h-5 sm:w-5" />
+                </Link>
               </div>
             </div>
           </div>

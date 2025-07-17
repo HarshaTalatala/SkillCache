@@ -379,7 +379,7 @@ const AddNote = () => {
                 value={formData.content}
                 onChange={(e) => handleChange('content', e.target.value)}
                 placeholder="Start writing your note..."
-                className="w-full min-h-[400px] sm:min-h-[500px] p-3 sm:p-6 bg-card rounded-lg border-2 border-border/60 resize-none focus:ring-1 focus:ring-border/20 focus:border-border/60 dark:focus:border-border/80 transition-all text-foreground placeholder:text-muted-foreground text-sm sm:text-base"
+                className="w-full min-h-[350px] sm:min-h-[450px] p-3 sm:p-6 bg-card rounded-lg border-2 border-border/60 resize-none focus:ring-1 focus:ring-border/20 focus:border-border/60 dark:focus:border-border/80 transition-all text-foreground placeholder:text-muted-foreground text-sm sm:text-base"
                 style={{ fontFamily: 'inherit', lineHeight: '1.6' }}
               />
             )}

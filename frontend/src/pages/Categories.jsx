@@ -14,36 +14,21 @@ import {
   Trash2
 } from 'lucide-react';
 import { useSearch } from '../context/SearchContext';
+import { useNote } from '../context/NoteContext';
 
 const Categories = () => {
   const { searchQuery } = useSearch();
+  const { notes, loading, error, fetchNotes } = useNote();
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [noteToPreview, setNoteToPreview] = useState(null);
   const [noteToDelete, setNoteToDelete] = useState(null);
-  const [categories, setCategories] = useState([
+  const categories = [
     {
       id: 'programming',
       name: 'Programming',
       icon: Terminal,
       color: 'blue',
       description: 'Code snippets, tutorials, and development notes',
-      noteCount: 24,
-      notes: [
-        {
-          id: 1,
-          title: 'React Hooks Best Practices',
-          summary: 'Essential patterns and tips for using React hooks effectively',
-          createdAt: '2024-12-15',
-          priority: 'high'
-        },
-        {
-          id: 2,
-          title: 'JavaScript ES6 Features',
-          summary: 'Modern JavaScript features and their practical applications',
-          createdAt: '2024-12-10',
-          priority: 'medium'
-        }
-      ]
     },
     {
       id: 'design',
@@ -51,16 +36,6 @@ const Categories = () => {
       icon: Palette,
       color: 'purple',
       description: 'UI/UX designs, inspiration, and creative resources',
-      noteCount: 18,
-      notes: [
-        {
-          id: 3,
-          title: 'Design System Guidelines',
-          summary: 'Comprehensive guide for building consistent design systems',
-          createdAt: '2024-12-12',
-          priority: 'high'
-        }
-      ]
     },
     {
       id: 'learning',
@@ -68,23 +43,6 @@ const Categories = () => {
       icon: BookOpen,
       color: 'green',
       description: 'Educational content, courses, and study materials',
-      noteCount: 32,
-      notes: [
-        {
-          id: 4,
-          title: 'Machine Learning Basics',
-          summary: 'Introduction to ML concepts and algorithms',
-          createdAt: '2024-12-08',
-          priority: 'medium'
-        },
-        {
-          id: 5,
-          title: 'Data Structures Overview',
-          summary: 'Common data structures and their use cases',
-          createdAt: '2024-12-05',
-          priority: 'low'
-        }
-      ]
     },
     {
       id: 'ideas',
@@ -92,16 +50,6 @@ const Categories = () => {
       icon: Lightbulb,
       color: 'yellow',
       description: 'Creative ideas, brainstorming, and inspiration',
-      noteCount: 15,
-      notes: [
-        {
-          id: 6,
-          title: 'App Concept: Personal Finance Tracker',
-          summary: 'Mobile app idea for tracking expenses and budgeting',
-          createdAt: '2024-12-14',
-          priority: 'medium'
-        }
-      ]
     },
     {
       id: 'work',
@@ -109,23 +57,6 @@ const Categories = () => {
       icon: Briefcase,
       color: 'red',
       description: 'Professional projects, meetings, and work-related notes',
-      noteCount: 28,
-      notes: [
-        {
-          id: 7,
-          title: 'Q4 Project Planning',
-          summary: 'Strategic planning for upcoming quarter deliverables',
-          createdAt: '2024-12-13',
-          priority: 'high'
-        },
-        {
-          id: 8,
-          title: 'Team Meeting Notes',
-          summary: 'Weekly standup discussions and action items',
-          createdAt: '2024-12-11',
-          priority: 'medium'
-        }
-      ]
     },
     {
       id: 'personal',
@@ -133,18 +64,8 @@ const Categories = () => {
       icon: User,
       color: 'indigo',
       description: 'Personal thoughts, diary entries, and life notes',
-      noteCount: 12,
-      notes: [
-        {
-          id: 9,
-          title: 'Travel Planning: Japan Trip',
-          summary: 'Itinerary and research for upcoming vacation',
-          createdAt: '2024-12-09',
-          priority: 'low'
-        }
-      ]
     }
-  ]);
+  ];
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
@@ -160,17 +81,8 @@ const Categories = () => {
 
   const handleDeleteNote = () => {
     // Remove the note from the selected category
-    setCategories(prevCategories => 
-      prevCategories.map(category => 
-        category.id === selectedCategory.id 
-          ? {
-              ...category,
-              notes: category.notes.filter(n => n.id !== noteToDelete.id),
-              noteCount: category.notes.filter(n => n.id !== noteToDelete.id).length
-            }
-          : category
-      )
-    );
+    // This logic needs to be updated to remove from the global notes list
+    // For now, we'll just set it to null
     setNoteToDelete(null);
   };
 
@@ -224,9 +136,12 @@ const Categories = () => {
     const CategoryIcon = selectedCategory.icon;
     
     // Filter notes in selected category based on search query
-    const filteredNotes = selectedCategory.notes.filter(note =>
-      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      note.summary.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredNotes = notes.filter(note =>
+      note.category === selectedCategory.name &&
+      (
+        (note.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (note.summary || '').toLowerCase().includes(searchQuery.toLowerCase())
+      )
     );
     
     return (
@@ -271,6 +186,7 @@ const Categories = () => {
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex flex-col min-w-0 flex-1 gap-0.5">
                         <h3 className="font-semibold text-foreground text-base sm:text-lg line-clamp-2 truncate min-w-0 mb-1">{note.title}</h3>
+                        <p className="text-muted-foreground text-xs sm:text-base mb-1 whitespace-pre-line line-clamp-3">{note.summary || note.content || ''}</p>
                       </div>
                       <div className="flex items-center gap-1.5 flex-shrink-0">
                         <button
@@ -330,22 +246,25 @@ const Categories = () => {
                 {/* Title & Badges */}
                 <div className="flex flex-col gap-2">
                   <h2 className="text-xl sm:text-3xl font-extrabold text-foreground leading-tight break-words">{noteToPreview.title}</h2>
-                  <div className="flex flex-wrap gap-2 mt-1">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getPriorityColor(noteToPreview.priority)} bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800`}>{noteToPreview.priority}</span>
-                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 capitalize">{selectedCategory.name}</span>
-                  </div>
                 </div>
                 {/* Summary */}
                 <div className="text-sm sm:text-lg text-muted-foreground leading-relaxed whitespace-pre-line break-words">
-                  {noteToPreview.summary}
+                  {noteToPreview.summary || noteToPreview.content || ''}
                 </div>
                 {/* Divider */}
                 <div className="border-t border-border/20" />
                 {/* Metadata */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs sm:text-sm text-muted-foreground">
-                  <div className="flex flex-col"><span className="font-semibold">Created</span><span>{new Date(noteToPreview.createdAt).toLocaleDateString()}</span></div>
-                  <div className="flex flex-col"><span className="font-semibold">Priority</span><span className={`font-semibold ${getPriorityColor(noteToPreview.priority)}`}>{noteToPreview.priority}</span></div>
-                  <div className="flex flex-col"><span className="font-semibold">Category</span><span>{selectedCategory.name}</span></div>
+                <div className="flex items-center justify-between text-xs sm:text-sm text-muted-foreground mt-2">
+                  <div className="flex flex-wrap gap-2 items-center">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getPriorityColor(noteToPreview.priority)} bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800`}>{noteToPreview.priority}</span>
+                    <span className="px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 capitalize">{selectedCategory.name}</span>
+                    {(noteToPreview.tags || []).map(tag => (
+                      <span key={tag} className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <span>Created: {new Date(noteToPreview.createdAt).toLocaleDateString()}</span>
                 </div>
               </div>
             </div>
@@ -379,9 +298,10 @@ const Categories = () => {
   const filteredCategories = categories.filter(category =>
     category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     category.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    category.notes.some(note => 
-      note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      note.summary.toLowerCase().includes(searchQuery.toLowerCase())
+    notes.some(note =>
+      note.category === category.name &&
+      ((note.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (note.summary || '').toLowerCase().includes(searchQuery.toLowerCase()))
     )
   );
 
@@ -426,7 +346,7 @@ const Categories = () => {
                     </p>
                     <div className="flex items-center justify-between pt-1 sm:pt-2">
                       <span className="text-xs text-muted-foreground">
-                        {category.noteCount} notes
+                        {notes.filter(note => note.category === category.name).length} notes
                       </span>
                       <span className="text-xs font-medium text-muted-foreground">
                         Click to view notes
