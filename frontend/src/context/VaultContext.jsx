@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useState } from 'react';
+import { useAuth } from './AuthContext';
 
 const VaultContext = createContext();
+
+// Helper to get API base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.MODE === 'development'
+  ? 'http://localhost:5000/api/vaults'
+  : 'https://<YOUR_AZURE_BACKEND_URL>/api/vaults');
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useVault = () => {
@@ -18,30 +24,30 @@ export const VaultProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [invitations, setInvitations] = useState([]);
   const [vaultMembers, setVaultMembers] = useState({});
+  const { currentUser } = useAuth();
+
+  // Helper to get ID token
+  const getIdToken = async () => {
+    if (!currentUser) throw new Error('Not authenticated');
+    return await currentUser.getIdToken();
+  };
 
   // Create a new vault
   const createVault = async (vaultData) => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Implement API call to create vault
-      
-      // For now, just add to local state - ready for backend integration
-      const newVault = {
-        id: Date.now().toString(),
-        ...vaultData,
-        createdAt: new Date().toISOString(),
-        ownerId: vaultData.ownerId,
-        members: [{
-          userId: vaultData.ownerId,
-          email: vaultData.ownerEmail,
-          role: 'owner',
-          status: 'active',
-          joinedAt: new Date().toISOString()
-        }]
-      };
-      
+      const token = await getIdToken();
+      const res = await fetch(`${API_BASE_URL}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(vaultData)
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to create vault');
+      const newVault = await res.json();
       setVaults(prevVaults => [...prevVaults, newVault]);
       return newVault;
     } catch (error) {
@@ -57,12 +63,16 @@ export const VaultProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Implement API call to fetch vaults
-      
-      // For now, return empty array - ready for backend integration
-      setVaults([]);
-      return [];
+      const token = await getIdToken();
+      const res = await fetch(`${API_BASE_URL}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to fetch vaults');
+      const data = await res.json();
+      setVaults(data);
+      return data;
     } catch (error) {
       setError(error.message);
       throw error;
@@ -76,21 +86,20 @@ export const VaultProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Implement API call to update vault
-      
-      // For now, just update local state - ready for backend integration
-      setVaults(prevVaults => 
-        prevVaults.map(vault => 
-          vault.id === id ? { ...vault, ...updates } : vault
-        )
-      );
-      
-      if (currentVault?.id === id) {
-        setCurrentVault(prev => ({ ...prev, ...updates }));
-      }
-      
-      return true;
+      const token = await getIdToken();
+      const res = await fetch(`${API_BASE_URL}/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updates)
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to update vault');
+      const updatedVault = await res.json();
+      setVaults(prevVaults => prevVaults.map(vault => vault.id === id ? updatedVault : vault));
+      if (currentVault?.id === id) setCurrentVault(updatedVault);
+      return updatedVault;
     } catch (error) {
       setError(error.message);
       throw error;
@@ -104,16 +113,16 @@ export const VaultProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Implement API call to delete vault
-      
-      // For now, just remove from local state - ready for backend integration
+      const token = await getIdToken();
+      const res = await fetch(`${API_BASE_URL}/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to delete vault');
       setVaults(prevVaults => prevVaults.filter(vault => vault.id !== id));
-      
-      if (currentVault?.id === id) {
-        setCurrentVault(null);
-      }
-      
+      if (currentVault?.id === id) setCurrentVault(null);
       return true;
     } catch (error) {
       setError(error.message);
@@ -128,20 +137,17 @@ export const VaultProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Implement API call to send invitation
-      
-      // For now, just simulate success - ready for backend integration
-      const invitation = {
-        id: Date.now().toString(),
-        vaultId,
-        email,
-        role,
-        status: 'pending',
-        invitedAt: new Date().toISOString(),
-        invitedBy: 'current-user-id'
-      };
-      
+      const token = await getIdToken();
+      const res = await fetch(`${API_BASE_URL}/${vaultId}/invite`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ email, role })
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to send invitation');
+      const invitation = await res.json();
       setInvitations(prev => [...prev, invitation]);
       return invitation;
     } catch (error) {
@@ -157,34 +163,18 @@ export const VaultProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Implement API call to accept invitation
-      
-      // For now, just remove from invitations - ready for backend integration
-      const invitation = invitations.find(inv => inv.id === invitationId);
-      if (!invitation) throw new Error('Invitation not found');
-      
-      // Add user to vault members
-      setVaults(prevVaults => 
-        prevVaults.map(vault => 
-          vault.id === invitation.vaultId 
-            ? {
-                ...vault,
-                members: [...vault.members, {
-                  userId: 'current-user-id',
-                  email: invitation.email,
-                  role: invitation.role,
-                  status: 'active',
-                  joinedAt: new Date().toISOString()
-                }]
-              }
-            : vault
-        )
-      );
-      
-      // Remove invitation
+      const token = await getIdToken();
+      const res = await fetch(`${API_BASE_URL}/invitations/${invitationId}/accept`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to accept invitation');
+      // Remove invitation from local state
       setInvitations(prev => prev.filter(inv => inv.id !== invitationId));
-      
+      // Optionally, refetch vaults
+      await fetchVaults();
       return true;
     } catch (error) {
       setError(error.message);
@@ -199,12 +189,15 @@ export const VaultProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Implement API call to reject invitation
-      
-      // For now, just remove from invitations - ready for backend integration
+      const token = await getIdToken();
+      const res = await fetch(`${API_BASE_URL}/invitations/${invitationId}/reject`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to reject invitation');
       setInvitations(prev => prev.filter(inv => inv.id !== invitationId));
-      
       return true;
     } catch (error) {
       setError(error.message);
@@ -287,12 +280,16 @@ export const VaultProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Implement API call to fetch invitations
-      
-      // For now, return empty array - ready for backend integration
-      setInvitations([]);
-      return [];
+      const token = await getIdToken();
+      const res = await fetch(`${API_BASE_URL}/invitations/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to fetch invitations');
+      const data = await res.json();
+      setInvitations(data);
+      return data;
     } catch (error) {
       setError(error.message);
       throw error;

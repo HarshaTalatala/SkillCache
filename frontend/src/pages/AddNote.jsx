@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSearch } from '../context/SearchContext';
+import { useNote } from '../context/NoteContext';
 import { 
   Save, 
   ArrowLeft, 
@@ -32,7 +33,9 @@ import {
 
 const AddNote = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const { currentUser } = useAuth();
+  const { addNote, updateNote, getNoteById, loading, error } = useNote();
   
   // Form state
   const [formData, setFormData] = useState({
@@ -81,6 +84,30 @@ const AddNote = () => {
     setWordCount(words.length);
     setCharacterCount(formData.content.length);
   }, [formData.content]);
+
+  useEffect(() => {
+    if (id) {
+      (async () => {
+        try {
+          const note = await getNoteById(id);
+          setFormData({
+            title: note.title || '',
+            content: note.content || '',
+            category: note.category || '',
+            priority: note.priority || 'medium',
+            attachments: note.attachments || [],
+            summary: note.summary || '',
+            tags: note.tags || [],
+          });
+          if (note.updatedAt) {
+            setLastSaved(new Date(note.updatedAt));
+          }
+        } catch (err) {
+          // Optionally handle error
+        }
+      })();
+    }
+  }, [id]);
 
   // Handle form changes
   const handleChange = (field, value) => {
@@ -165,17 +192,19 @@ const AddNote = () => {
     try {
       const noteData = {
         ...formData,
-        userId: currentUser?.uid,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
         wordCount,
         characterCount
       };
-      
-      // Save note - this would connect to your backend
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      navigate('/');
+      if (id) {
+        noteData.updatedAt = new Date().toISOString();
+        await updateNote(id, noteData);
+        setLastSaved(new Date(noteData.updatedAt)); // Update lastSaved after editing
+        navigate('/'); // Always navigate after saving
+      } else {
+        await addNote(noteData);
+        setLastSaved(new Date()); // Update lastSaved after adding
+        navigate('/'); // Only navigate after adding
+      }
     } catch (error) {
       console.error('Error saving note:', error);
     } finally {
@@ -189,6 +218,20 @@ const AddNote = () => {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const categoryIcons = {
+    Programming: Terminal,
+    Design: Palette,
+    Learning: BookOpen,
+    Ideas: Lightbulb,
+    Work: Briefcase,
+    Personal: User
+  };
+  const priorityColors = {
+    high: 'text-red-500',
+    medium: 'text-yellow-500',
+    low: 'text-green-500'
   };
 
   return (
@@ -287,7 +330,13 @@ const AddNote = () => {
                 <div className="prose prose-neutral dark:prose-invert max-w-none">
                   {/* Preview Title */}
                   {formData.title && (
-                    <div className="mb-6 pb-4 border-b border-border/30">
+                    <div className="mb-6 pb-4 border-b border-border/30 flex items-center gap-2">
+                      {formData.category && (
+                        (() => {
+                          const Icon = categoryIcons[formData.category] || BookOpen;
+                          return <Icon className="w-6 h-6 text-primary" />;
+                        })()
+                      )}
                       <h1 className="text-3xl font-bold text-foreground mb-0">
                         {formData.title}
                       </h1>
@@ -305,18 +354,18 @@ const AddNote = () => {
                   
                   {/* Preview Metadata */}
                   <div className="mt-6 pt-4 border-t border-border/30">
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground items-center">
                       {formData.category && (
                         <span className="flex items-center gap-1">
-                          <Hash className="w-3 h-3" />
+                          {(() => {
+                            const Icon = categoryIcons[formData.category] || BookOpen;
+                            return <Icon className="w-4 h-4 text-primary" />;
+                          })()}
                           {formData.category}
                         </span>
                       )}
-                      <span className="flex items-center gap-1">
-                        <Star className={`w-3 h-3 ${
-                          formData.priority === 'high' ? 'text-red-500' : 
-                          formData.priority === 'medium' ? 'text-yellow-500' : 'text-green-500'
-                        }`} />
+                      <span className={`flex items-center gap-1 font-semibold ${priorityColors[formData.priority]}`}>
+                        <AlertCircle className="w-4 h-4" />
                         {formData.priority.charAt(0).toUpperCase() + formData.priority.slice(1)} Priority
                       </span>
                       <span>{wordCount} words • {characterCount} characters</span>
@@ -550,6 +599,9 @@ const AddNote = () => {
                 ))}
               </div>
             </div>
+          )}
+          {error && (
+            <div className="text-red-500 text-sm mb-2">{error}</div>
           )}
           {/* Action Buttons (Mobile Only, now at bottom) */}
           <div className="flex flex-row gap-2 lg:hidden mt-4">

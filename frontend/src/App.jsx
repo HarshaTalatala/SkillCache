@@ -82,6 +82,16 @@ function App() {
         }
       />
       <Route
+        path="/add-note/:id"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddNote />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/categories"
         element={
           <ProtectedRoute>

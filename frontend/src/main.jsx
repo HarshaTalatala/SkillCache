@@ -8,20 +8,23 @@ import { SearchProvider } from './context/SearchContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { VaultProvider } from './context/VaultContext';
 import { PreferencesProvider } from './context/PreferencesContext';
+import { NoteProvider } from './context/NoteContext';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <VaultProvider>
-          <AuthProvider>
-            <SearchProvider>
-              <PreferencesProvider>
-                <App />
-              </PreferencesProvider>
-            </SearchProvider>
-          </AuthProvider>
-        </VaultProvider>
+        <AuthProvider>
+          <VaultProvider>
+            <NoteProvider>
+              <SearchProvider>
+                <PreferencesProvider>
+                  <App />
+                </PreferencesProvider>
+              </SearchProvider>
+            </NoteProvider>
+          </VaultProvider>
+        </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>

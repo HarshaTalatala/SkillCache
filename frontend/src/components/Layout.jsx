@@ -176,9 +176,9 @@ const Layout = ({ children }) => {
         </div>
       </aside>
 
-      <div className={`main-content flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} ml-0 ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} style={{ flex: 1, minWidth: 0 }}>
+      <div className={`main-content flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-64'} ml-0 ${sidebarCollapsed ? 'sidebar-collapsed' : ''} px-2 sm:px-4 lg:px-8`} style={{ flex: 1, minWidth: 0 }}>
         {location.pathname !== '/ai-assistant' ? (
-          <header className="w-full bg-background/95 backdrop-blur-sm border-b-2 border-border/60 min-h-[80px]">
+          <header className="w-full bg-background/95 backdrop-blur-sm border-b-2 border-border/60 min-h-[80px] overflow-x-hidden">
             <div className="flex items-center h-20 px-2 sm:px-6">
               <div className="flex-shrink-0">
                 <button onClick={() => setSidebarOpen(true)} className="p-2 sm:hidden" aria-label="Open navigation menu">
@@ -187,7 +187,7 @@ const Layout = ({ children }) => {
               </div>
               <div className="flex-1 flex items-center px-2 sm:px-4">
                 {/* Mobile Search Input */}
-                <div className="relative flex items-center w-full sm:hidden gap-3 px-3 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] border-2 border-primary/40 shadow-sm ml-4">
+                <div className="relative flex items-center w-full sm:hidden gap-2 px-2 py-2 text-muted-foreground bg-white/90 dark:bg-black rounded-full min-h-[40px] border-2 border-primary/40 shadow-sm max-w-full">
                   <div className="relative flex items-center w-full">
                     <Search size={24} className="z-10 mr-4" />
                     <input
@@ -241,7 +241,7 @@ const Layout = ({ children }) => {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 flex-shrink-0 sm:gap-2 min-h-[56px] pr-2 sm:pr-4">
+              <div className="flex items-center gap-2 flex-shrink-0 min-h-[56px] pr-2 sm:pr-4">
                 <button
                   onClick={toggleTheme}
                   className="w-9 h-9 flex items-center justify-center hover:bg-muted rounded-full border-2 border-primary/40"
