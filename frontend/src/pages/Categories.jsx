@@ -178,8 +178,6 @@ const Categories = () => {
                     key={note.id}
                     className="note-card bg-card border border-border/40 shadow-lg hover:shadow-xl transition-shadow duration-200 rounded-2xl p-4 sm:p-6 flex flex-col gap-2 sm:gap-3 cursor-pointer"
                     onClick={e => {
-                      // Prevent preview if delete button is clicked
-                      if (e.target.closest('.note-delete-btn')) return;
                       handlePreviewNote(note);
                     }}
                   >
@@ -188,18 +186,7 @@ const Categories = () => {
                         <h3 className="font-semibold text-foreground text-base sm:text-lg line-clamp-2 truncate min-w-0 mb-1">{note.title}</h3>
                         <p className="text-muted-foreground text-xs sm:text-base mb-1 whitespace-pre-line line-clamp-3">{note.summary || note.content || ''}</p>
                       </div>
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <button
-                          className="note-delete-btn p-1 sm:p-1.5 hover:bg-muted rounded transition-colors flex-shrink-0"
-                          onClick={e => {
-                            e.stopPropagation();
-                            setNoteToDelete(note);
-                          }}
-                          title="Delete Note"
-                        >
-                          <Trash2 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-                        </button>
-                      </div>
+                      {/* Delete button removed */}
                     </div>
                     <p className="text-muted-foreground text-xs sm:text-base mb-1 whitespace-pre-line line-clamp-3">{note.summary}</p>
                     <div className="flex items-center justify-between gap-2 mt-auto text-xs sm:text-sm text-muted-foreground">

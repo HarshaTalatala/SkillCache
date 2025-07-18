@@ -83,9 +83,9 @@ const Dashboard = ({ sidebarCollapsed }) => {
               const CategoryIcon = categoryIcons[note.category] || BookOpen;
               const priority = note.priority || 'medium';
               let stars = 1;
-              let starStroke = '#22c55e'; // green-500
-              if (priority === 'medium') { stars = 2; starStroke = '#facc15'; } // yellow-400
-              if (priority === 'high') { stars = 3; starStroke = '#ef4444'; } // red-500
+              let starStroke = '#ef4444'; // always red
+              if (priority === 'medium') { stars = 2; }
+              if (priority === 'high') { stars = 3; }
               return (
                 <div
                   key={note.id || note._id || note.createdAt || idx}

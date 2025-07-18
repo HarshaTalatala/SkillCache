@@ -60,20 +60,8 @@ const Vaults = () => {
     ownerEmail: currentUser?.email
   });
   
-  // TEST CONTENT: Add a test vault for My Vaults page
-  const testVaults = [
-    {
-      id: 'vault1',
-      name: 'Test Vault',
-      description: 'This is a test vault for My Vaults page.',
-      isPrivate: true,
-      createdAt: new Date().toISOString(),
-      members: [
-        { userId: currentUser?.uid, role: 'owner' }
-      ]
-    }
-  ];
-  const displayVaults = (vaults && vaults.length > 0) ? vaults : testVaults;
+  // Use only real vaults from backend
+  const displayVaults = vaults || [];
   
   useEffect(() => {
     fetchVaults();
@@ -91,17 +79,31 @@ const Vaults = () => {
   
   const handleCreateVault = async (e) => {
     e.preventDefault();
+    if (!currentUser) {
+      alert('You must be logged in to create a vault.');
+      return;
+    }
+    if (!newVaultData.name) {
+      alert('Vault name is required.');
+      return;
+    }
     try {
-      await createVault(newVaultData);
+      // Optionally show a loading spinner here
+      await createVault({
+        ...newVaultData,
+        ownerId: currentUser.uid,
+        ownerEmail: currentUser.email
+      });
       setNewVaultData({
         name: '',
         description: '',
         isPrivate: true,
-        ownerId: currentUser?.uid,
-        ownerEmail: currentUser?.email
+        ownerId: currentUser.uid,
+        ownerEmail: currentUser.email
       });
       setIsCreateModalOpen(false);
     } catch (error) {
+      alert(error.message || "Error creating vault");
       console.error("Error creating vault:", error);
     }
   };
@@ -221,6 +223,7 @@ const Vaults = () => {
           <button
             onClick={() => setIsCreateModalOpen(true)}
             className="nothing-btn-primary flex items-center gap-2 w-full sm:w-auto justify-center px-3 py-1.5 text-xs sm:text-sm"
+            disabled={!currentUser || loading}
           >
             <Plus className="w-4 h-4" />
             New Vault
@@ -508,6 +511,7 @@ const Vaults = () => {
                   <button
                     type="submit"
                     className="nothing-btn-primary text-base px-4 py-2 rounded-lg"
+                    disabled={!currentUser || loading}
                   >
                     Create Vault
                   </button>

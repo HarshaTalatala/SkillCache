@@ -3,9 +3,9 @@ import { useAuth } from './AuthContext';
 
 const NoteContext = createContext();
 
-const API_BASE_URL = import.meta.env.VITE_NOTES_API_URL || (import.meta.env.MODE === 'development'
-  ? 'http://localhost:5000/api/notes'
-  : 'https://<YOUR_AZURE_BACKEND_URL>/api/notes');
+const API_BASE_URL = import.meta.env.MODE === 'development'
+  ? 'http://localhost:7071/api/notes'
+  : (import.meta.env.VITE_NOTES_API_URL || 'https://<YOUR_AZURE_BACKEND_URL>/api/notes');
 
 export const useNote = () => {
   const context = useContext(NoteContext);

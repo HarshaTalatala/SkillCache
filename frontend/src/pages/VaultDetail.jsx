@@ -34,6 +34,8 @@ const VaultDetail = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState('');
   const [vaultNotes, setVaultNotes] = useState([]);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [notesError, setNotesError] = useState(null);
 
   // Find the current vault
   const vault = vaults.find(v => v.id === vaultId);
@@ -46,10 +48,26 @@ const VaultDetail = () => {
   }, [vault, loading, navigate]);
 
   useEffect(() => {
-    // Fetch vault notes - this would connect to your backend
-    // For now, vault starts empty
-    setVaultNotes([]);
-  }, [vaultId]);
+    const fetchNotes = async () => {
+      setNotesLoading(true);
+      setNotesError(null);
+      try {
+        const token = currentUser && (await currentUser.getIdToken());
+        const res = await fetch(`/api/vaults/${vaultId}/notes`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error((await res.json()).error || 'Failed to fetch notes');
+        const data = await res.json();
+        setVaultNotes(Array.isArray(data) ? data : []);
+      } catch (err) {
+        setNotesError(err.message);
+        setVaultNotes([]);
+      } finally {
+        setNotesLoading(false);
+      }
+    };
+    if (vaultId && currentUser) fetchNotes();
+  }, [vaultId, currentUser]);
 
   // --- MOCK DATA & STATE ---
   const MOCK_NOTES = [
@@ -145,24 +163,30 @@ const VaultDetail = () => {
     }
     setIsNoteModalOpen(true);
   };
-  const handleSaveNote = (e) => {
+  const handleSaveNote = async (e) => {
     e.preventDefault();
     const tagsArr = noteForm.tags.split(',').map(t => t.trim()).filter(Boolean);
-    if (isEditNote) {
-      setVaultNotes(notes => notes.map(n => n.id === noteForm.id ? { ...noteForm, tags: tagsArr, updatedAt: new Date(), createdBy: n.createdBy } : n));
-    } else {
-      setVaultNotes(notes => [
-        ...notes,
-        {
-          ...noteForm,
-          id: `note${Date.now()}`,
-          tags: tagsArr,
-          createdBy: currentUser?.email,
-          updatedAt: new Date(),
+    setNotesLoading(true);
+    setNotesError(null);
+    try {
+      const token = currentUser && (await currentUser.getIdToken());
+      const res = await fetch(`/api/vaults/${vaultId}/notes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
-      ]);
+        body: JSON.stringify({ title: noteForm.title, content: noteForm.content, tags: tagsArr })
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to add note');
+      const newNote = await res.json();
+      setVaultNotes(notes => [newNote, ...notes]);
+      setIsNoteModalOpen(false);
+    } catch (err) {
+      setNotesError(err.message);
+    } finally {
+      setNotesLoading(false);
     }
-    setIsNoteModalOpen(false);
   };
   const handleDeleteNote = () => {
     setVaultNotes(notes => notes.filter(n => n.id !== noteToDelete.id));
@@ -218,7 +242,6 @@ const VaultDetail = () => {
             >
               <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
             </button>
-            
             <div className="flex items-center gap-2 sm:gap-3">
               {vault.isPrivate ? (
                 <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-primary/20 to-primary/30 rounded-2xl flex items-center justify-center border-2 border-primary/30">
@@ -235,66 +258,54 @@ const VaultDetail = () => {
               </div>
             </div>
           </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mt-2 sm:mt-0 w-full flex-1">
-            {userRole === 'owner' && (
-              <span className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base col-span-2 sm:col-span-4">Owner</span>
-            )}
-            {userRole === 'edit' && (
-              <span className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-blue-100 text-blue-800 border border-blue-200 col-span-2 sm:col-span-4">Editor</span>
-            )}
-            {userRole === 'view' && (
-              <span className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-gray-100 text-gray-800 border border-gray-200 col-span-2 sm:col-span-4">Viewer</span>
-            )}
-
+          {/* Minimalist Action Buttons Row */}
+          <div className="flex flex-row items-center gap-2 sm:gap-3 ml-auto mt-3 sm:mt-0">
             {canEdit && (
               <button
                 onClick={() => handleOpenNoteModal()}
-                className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base w-full"
-                >
-                <Plus className="w-4 h-4" />
-                Add Note
+                className="p-2 rounded-lg hover:bg-muted transition-colors flex flex-row items-center gap-x-1"
+                title="Add Note"
+              >
+                <Plus className="w-5 h-5" />
+                <span className="hidden sm:inline">Add Note</span>
               </button>
             )}
-
             {(userRole === 'owner' || userRole === 'edit') && (
               <button
                 onClick={() => setIsInviteModalOpen(true)}
-                className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base w-full"
-                >
-                <Users className="w-4 h-4" />
-                Invite
+                className="p-2 rounded-lg hover:bg-muted transition-colors flex flex-row items-center gap-x-1"
+                title="Invite"
+              >
+                <Users className="w-5 h-5" />
+                <span className="hidden sm:inline">Invite</span>
               </button>
             )}
-
             <button
               onClick={() => setShowMembersModal(true)}
-              className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base w-full"
-              title="View Members"
+              className="p-2 rounded-lg hover:bg-muted transition-colors flex flex-row items-center gap-x-1"
+              title="Members"
             >
-              <Users className="w-4 h-4" />
-              Members
+              <Users className="w-5 h-5" />
+              <span className="hidden sm:inline">Members</span>
             </button>
-
             {userRole === 'owner' && (
               <button
                 onClick={() => setIsEditVaultModalOpen(true)}
-                className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base w-full"
+                className="p-2 rounded-lg hover:bg-muted transition-colors flex flex-row items-center gap-x-1"
                 title="Edit Vault"
               >
-                <Edit className="w-4 h-4" />
-                Edit
+                <Edit className="w-5 h-5" />
+                <span className="hidden sm:inline">Edit</span>
               </button>
             )}
-
             {userRole === 'owner' && (
               <button
                 onClick={() => setIsDeleteVaultModalOpen(true)}
-                className="nothing-btn-ghost nothing-input flex items-center justify-center gap-2 px-2 py-1 sm:px-3 sm:py-2 font-medium text-xs sm:text-base w-full"
+                className="p-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors flex flex-row items-center gap-x-1"
                 title="Delete Vault"
               >
-                <Trash2 className="w-4 h-4" />
-                Delete
+                <Trash2 className="w-5 h-5" />
+                <span className="hidden sm:inline">Delete</span>
               </button>
             )}
           </div>
@@ -316,7 +327,23 @@ const VaultDetail = () => {
 
         {/* Notes Grid */}
         <div className="space-y-4 sm:space-y-6">
-          {filteredNotes.length === 0 ? (
+          {notesLoading ? (
+            <div className="text-center py-8 sm:py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-2 sm:mb-4"></div>
+              <p className="text-muted-foreground">Loading notes...</p>
+            </div>
+          ) : notesError ? (
+            <div className="text-center py-8 sm:py-16 text-red-500">
+              <AlertCircle className="w-10 h-10 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-4" />
+              <p>{notesError}</p>
+              <button
+                onClick={() => setNotesError(null)}
+                className="nothing-btn-primary mt-4"
+              >
+                Retry
+              </button>
+            </div>
+          ) : filteredNotes.length === 0 ? (
             <div className="text-center py-8 sm:py-16">
               <FileText className="w-10 h-10 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-2 sm:mb-4" />
               <h3 className="text-base sm:text-xl font-medium text-foreground mb-1 sm:mb-2">

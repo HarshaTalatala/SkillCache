@@ -4,9 +4,9 @@ import { useAuth } from './AuthContext';
 const VaultContext = createContext();
 
 // Helper to get API base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.MODE === 'development'
-  ? 'http://localhost:5000/api/vaults'
-  : 'https://<YOUR_AZURE_BACKEND_URL>/api/vaults');
+const API_BASE_URL = import.meta.env.MODE === 'development'
+  ? 'http://localhost:7071/api/vaults'
+  : (import.meta.env.VITE_API_URL || 'https://<YOUR_AZURE_BACKEND_URL>/api/vaults');
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useVault = () => {
@@ -212,10 +212,15 @@ export const VaultProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Implement API call to remove user
-      
-      // For now, just update local state - ready for backend integration
+      const token = await getIdToken();
+      const res = await fetch(`${API_BASE_URL}/${vaultId}/members/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to remove user');
+      // Update local state after backend success
       setVaults(prevVaults => 
         prevVaults.map(vault => 
           vault.id === vaultId 
@@ -226,7 +231,6 @@ export const VaultProvider = ({ children }) => {
             : vault
         )
       );
-      
       return true;
     } catch (error) {
       setError(error.message);
@@ -241,10 +245,17 @@ export const VaultProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Implement API call to update user role
-      
-      // For now, just update local state - ready for backend integration
+      const token = await getIdToken();
+      const res = await fetch(`${API_BASE_URL}/${vaultId}/members/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ role: newRole })
+      });
+      if (!res.ok) throw new Error((await res.json()).error || 'Failed to update user role');
+      // Update local state after backend success
       setVaults(prevVaults => 
         prevVaults.map(vault => 
           vault.id === vaultId 
@@ -259,7 +270,6 @@ export const VaultProvider = ({ children }) => {
             : vault
         )
       );
-      
       return true;
     } catch (error) {
       setError(error.message);
